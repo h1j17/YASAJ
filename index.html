@@ -380,7 +380,7 @@
             <div class="cart-items" id="cartItems">
                 <p class="empty-cart-msg">السلة فارغة حالياً</p>
             </div>
-
+            
             <div class="cart-total">
                 المجموع: <span id="cartTotal">0</span> د.ع
             </div>
@@ -412,12 +412,28 @@
         let cart = [];
         let isAdmin = false;
 
-        // إظهار وإخفاء لوحة الإدارة
+        // إظهار وإخفاء لوحة الإدارة بحماية كلمة السر
         function toggleAdminPanel() {
             const panel = document.getElementById('adminPanel');
-            isAdmin = !isAdmin;
-            panel.style.display = isAdmin ? 'block' : 'none';
-            renderProducts();
+            
+            // إذا كانت اللوحة مفتوحة، اغلقها
+            if (isAdmin) {
+                isAdmin = false;
+                panel.style.display = 'none';
+                renderProducts();
+                return;
+            }
+
+            // طلب كلمة السر
+            const password = prompt("يرجى إدخال كلمة سر الإدارة:");
+            
+            if (password === "1972002h1") {
+                isAdmin = true;
+                panel.style.display = 'block';
+                renderProducts();
+            } else if (password !== null) {
+                alert("كلمة السر غير صحيحة!");
+            }
         }
 
         // عرض المنتجات
@@ -465,7 +481,7 @@
 
                 products.push(newProduct);
                 localStorage.setItem('yasa_products', JSON.stringify(products));
-
+                
                 nameInput.value = '';
                 priceInput.value = '';
                 imageInput.value = '';
@@ -567,7 +583,7 @@
 
             const telegramUsername = "yasa1h";
             const encodedText = encodeURIComponent(orderText);
-
+            
             window.open(`https://t.me/${telegramUsername}?text=${encodedText}`, '_blank');
         }
 
