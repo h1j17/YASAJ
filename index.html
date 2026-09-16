@@ -71,7 +71,6 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: transform 0.2s;
         }
         .social-btn:active { transform: scale(0.95); }
-        .btn-discount     { background: linear-gradient(45deg, #d4af37, #f3e5ab); color: #4a0710; font-weight: 800; }
         .btn-tg-personal { background-color: #0088cc; }
         .btn-tg-channel  { background-color: #229ED9; }
         .btn-instagram   { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
@@ -87,7 +86,10 @@
         .admin-form label { font-size: 0.8rem; font-weight: bold; margin-bottom: 4px; color: var(--primary-color); }
         .admin-form input, .admin-form textarea { padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.85rem; }
         .admin-form textarea { resize: vertical; height: 38px; }
-        .btn-save-product { background-color: var(--primary-color); color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        
+        .admin-btn-group { display: flex; gap: 5px; }
+        .btn-save-product { background-color: var(--primary-color); color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; flex: 1; }
+        .btn-cancel-edit { background-color: #777; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; display: none; }
 
         .container { max-width: 1100px; margin: 20px auto; padding: 0 12px; }
 
@@ -128,7 +130,10 @@
         }
         .btn-add:active { transform: scale(0.98); }
 
-        .btn-delete-product { position: absolute; top: 6px; right: 6px; background: rgba(255, 0, 0, 0.85); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display: none; z-index: 3; }
+        /* أزرار الإدارة على الكارت */
+        .admin-card-actions { position: absolute; top: 6px; right: 6px; display: none; gap: 4px; z-index: 3; }
+        .btn-edit-product { background: rgba(0, 123, 255, 0.9); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }
+        .btn-delete-product { background: rgba(255, 0, 0, 0.85); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }
 
         .floating-cart-bar {
             position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
@@ -253,14 +258,16 @@
     </header>
 
     <div class="admin-panel" id="adminPanel">
-        <h3>➕ إضافة منتج جديد للمتجر السحابي</h3>
+        <h3 id="adminPanelTitle">➕ إضافة منتج جديد للمتجر السحابي</h3>
+        <input type="hidden" id="editingProductId" value="">
+        
         <div class="admin-form">
             <div>
                 <label>اسم المنتج:</label>
                 <input type="text" id="newBagName" placeholder="مثال: ساعة فاخرة / حقيبة جلد">
             </div>
             <div>
-                <label>السعر (أدخل الرقم كاملاً مثل 10000 أو 7500):</label>
+                <label>السعر (أدخل الرقم كاملاً مثل 10000):</label>
                 <input type="number" id="newBagPrice" placeholder="10000">
             </div>
             <div>
@@ -268,10 +275,13 @@
                 <textarea id="newBagDesc" placeholder="مثال: ساعة مقاومة للماء / حقيبة بمقاس 25cm"></textarea>
             </div>
             <div>
-                <label>اختر الصور:</label>
+                <label id="imageLabel">اختر الصور:</label>
                 <input type="file" id="newBagImage" accept="image/*" multiple>
             </div>
-            <button class="btn-save-product" id="saveBtn" onclick="addNewProduct()">إضافة للكتالوج 🚀</button>
+            <div class="admin-btn-group">
+                <button class="btn-save-product" id="saveBtn" onclick="saveProduct()">إضافة للكتالوج 🚀</button>
+                <button class="btn-cancel-edit" id="cancelEditBtn" onclick="resetAdminForm()">إلغاء</button>
+            </div>
         </div>
     </div>
 
@@ -339,8 +349,9 @@
                 <label for="address">المحافظة / العنوان المباشر:</label>
                 <input type="text" id="address" placeholder="بغداد / المنصور / قرب ..." required>
 
+                <!-- قسم جهة التواصل (اختياري تماماً) -->
                 <div class="social-contact-selector">
-                    <span class="social-contact-title">اختر جهة التواصل معك عند حدوث مشكلة أو تأخير بالطلب:</span>
+                    <span class="social-contact-title">اختر جهة التواصل معك عند حدوث مشكلة أو تأخير بالطلب (اختياري):</span>
                     <div class="radio-group">
                         <label class="radio-option">
                             <input type="radio" name="contactPlatform" value="telegram" checked onclick="toggleSocialInput()">
@@ -352,7 +363,7 @@
                         </label>
                     </div>
                     
-                    <input type="text" id="socialHandle" placeholder="أدخل معرف التلكرام (مثال: @username)" required>
+                    <input type="text" id="socialHandle" placeholder="أدخل معرف التلكرام أو الانستكرام (اختياري)">
                 </div>
 
                 <button type="submit" class="btn-submit" id="submitBtn">
@@ -404,7 +415,6 @@
         let activeImagesList = [];
         let activeImageIdx = 0;
 
-        // 1. تحميل سريع فوري من ذاكرة الهاتف المؤقتة (Local Storage) أولاً إن وجدت
         const cachedProducts = localStorage.getItem('yasa_cached_products');
         if (cachedProducts) {
             try {
@@ -413,7 +423,6 @@
             } catch (e) {}
         }
 
-        // 2. جلب التحديثات من قاعدة البيانات في الخلفية وتخزينها للمرات القادمة
         db.ref('products').on('value', (snapshot) => {
             const data = snapshot.val();
             products = [];
@@ -424,7 +433,6 @@
                     products.push({ id: key, ...prod, images: imgs, activeImgIdx: 0 });
                 });
             }
-            // حفظ نسخة مطابقة بذاكرة المتصفح للسرعة الفائقة مستقبلاً
             localStorage.setItem('yasa_cached_products', JSON.stringify(products));
             renderProducts();
         });
@@ -434,6 +442,7 @@
             if (isAdmin) {
                 isAdmin = false;
                 panel.style.display = 'none';
+                resetAdminForm();
                 renderProducts();
                 return;
             }
@@ -464,7 +473,10 @@
                 const currentIdx = product.activeImgIdx || 0;
 
                 card.innerHTML = `
-                    ${isAdmin ? `<button class="btn-delete-product" style="display:block" onclick="deleteProduct('${product.id}')">✕</button>` : ''}
+                    <div class="admin-card-actions" style="display: ${isAdmin ? 'flex' : 'none'}">
+                        <button class="btn-edit-product" onclick="startEditProduct('${product.id}')" title="تعديل"><i class="fa-pen fas"></i></button>
+                        <button class="btn-delete-product" onclick="deleteProduct('${product.id}')" title="حذف"><i class="fa-times fas"></i></button>
+                    </div>
                     <div class="product-gallery">
                         <div class="zoom-badge"><i class="fa-search-plus fas"></i> تكبير (${imgs.length})</div>
                         <img src="${imgs[currentIdx]}" alt="${product.name}" class="product-img" onclick="openImageModal(${pIdx}, ${currentIdx})">
@@ -542,9 +554,9 @@
             const platform = document.querySelector('input[name="contactPlatform"]:checked').value;
             const socialInput = document.getElementById('socialHandle');
             if (platform === 'telegram') {
-                socialInput.placeholder = "أدخل معرف التلكرام (مثال: @username)";
+                socialInput.placeholder = "أدخل معرف التلكرام (مثال: @username) - اختياري";
             } else {
-                socialInput.placeholder = "أدخل معرف الانستكرام (مثال: @username)";
+                socialInput.placeholder = "أدخل معرف الانستكرام (مثال: @username) - اختياري";
             }
         }
 
@@ -577,45 +589,105 @@
             });
         }
 
-        async function addNewProduct() {
-            const nameInput = document.getElementById('newBagName');
-            const priceInput = document.getElementById('newBagPrice');
-            const descInput = document.getElementById('newBagDesc');
+        // تحضير لوحة الإدارة لوضع التعديل
+        function startEditProduct(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            document.getElementById('editingProductId').value = product.id;
+            document.getElementById('newBagName').value = product.name;
+            document.getElementById('newBagPrice').value = product.price;
+            document.getElementById('newBagDesc').value = product.desc || '';
+            
+            document.getElementById('adminPanelTitle').innerText = '✏️ تعديل المنتج الحالي';
+            document.getElementById('saveBtn').innerText = 'حفظ التعديلات 💾';
+            document.getElementById('cancelEditBtn').style.display = 'block';
+            document.getElementById('imageLabel').innerText = 'استبدال الصور (اختياري - اتركه فارغاً للإبقاء على الصور القديمة):';
+
+            document.getElementById('adminPanel').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetAdminForm() {
+            document.getElementById('editingProductId').value = '';
+            document.getElementById('newBagName').value = '';
+            document.getElementById('newBagPrice').value = '';
+            document.getElementById('newBagDesc').value = '';
+            document.getElementById('newBagImage').value = '';
+            
+            document.getElementById('adminPanelTitle').innerText = '➕ إضافة منتج جديد للمتجر السحابي';
+            document.getElementById('saveBtn').innerText = 'إضافة للكتالوج 🚀';
+            document.getElementById('cancelEditBtn').style.display = 'none';
+            document.getElementById('imageLabel').innerText = 'اختر الصور:';
+        }
+
+        async function saveProduct() {
+            const editingId = document.getElementById('editingProductId').value;
+            const nameInput = document.getElementById('newBagName').value.trim();
+            const priceInput = document.getElementById('newBagPrice').value.trim();
+            const descInput = document.getElementById('newBagDesc').value.trim();
             const imageInput = document.getElementById('newBagImage');
             const saveBtn = document.getElementById('saveBtn');
 
-            if (!nameInput.value || !priceInput.value || imageInput.files.length === 0) {
-                alert('يرجى كتابة الاسم والسعر واختيار صورة واحدة على الأقل!');
+            if (!nameInput || !priceInput) {
+                alert('يرجى إدخال اسم المنتج والسعر على الأقل!');
                 return;
             }
 
             saveBtn.disabled = true;
-            saveBtn.innerText = 'جاري ضغط ورفع الصور... ⏳';
-
-            const files = Array.from(imageInput.files);
-            const compressedImagesPromises = files.map(file => compressImage(file));
+            saveBtn.innerText = 'جاري المعالجة والحفظ... ⏳';
 
             try {
-                const compressedImages = await Promise.all(compressedImagesPromises);
+                if (editingId) {
+                    // وضع التعديل
+                    const productRef = db.ref('products/' + editingId);
+                    const snapshot = await productRef.once('value');
+                    const existingData = snapshot.val();
 
-                const newProductRef = db.ref('products').push();
-                await newProductRef.set({
-                    name: nameInput.value,
-                    price: Number(priceInput.value),
-                    desc: descInput.value || "",
-                    images: compressedImages
-                });
+                    let finalImages = existingData.images;
+                    if (imageInput.files.length > 0) {
+                        const files = Array.from(imageInput.files);
+                        const compressedImagesPromises = files.map(file => compressImage(file));
+                        finalImages = await Promise.all(compressedImagesPromises);
+                    }
 
-                nameInput.value = '';
-                priceInput.value = '';
-                descInput.value = '';
-                imageInput.value = '';
-                alert('تمت إضافة المنتج بنجاح وبسرعة فائقة! 🚀');
+                    await productRef.update({
+                        name: nameInput,
+                        price: Number(priceInput),
+                        desc: descInput,
+                        images: finalImages
+                    });
+
+                    alert('تم تعديل المنتج بنجاح! ✨');
+                    resetAdminForm();
+                } else {
+                    // وضع الإضافة الجديدة
+                    if (imageInput.files.length === 0) {
+                        alert('يرجى اختيار صورة واحدة على الأقل للمنتج الجديد!');
+                        saveBtn.disabled = false;
+                        saveBtn.innerText = 'إضافة للكتالوج 🚀';
+                        return;
+                    }
+
+                    const files = Array.from(imageInput.files);
+                    const compressedImagesPromises = files.map(file => compressImage(file));
+                    const compressedImages = await Promise.all(compressedImagesPromises);
+
+                    const newProductRef = db.ref('products').push();
+                    await newProductRef.set({
+                        name: nameInput,
+                        price: Number(priceInput),
+                        desc: descInput,
+                        images: compressedImages
+                    });
+
+                    alert('تمت إضافة المنتج بنجاح وبسرعة فائقة! 🚀');
+                    resetAdminForm();
+                }
             } catch (error) {
                 alert('حدث خطأ أثناء الحفظ: ' + error.message);
             } finally {
                 saveBtn.disabled = false;
-                saveBtn.innerText = 'إضافة للكتالوج 🚀';
+                saveBtn.innerText = editingId ? 'حفظ التعديلات 💾' : 'إضافة للكتالوج 🚀';
             }
         }
 
@@ -711,11 +783,6 @@
                 return;
             }
 
-            if (!socialHandle) {
-                alert('⚠️ يرجى كتابة معرف حسابكِ (التلكرام أو الانستكرام) لضمان إمكانية التواصل معكِ!');
-                return;
-            }
-
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
             submitBtn.innerText = 'جاري الإرسال...';
@@ -729,11 +796,12 @@
             const finalTotal = itemsTotal + DELIVERY_FEE;
 
             const platformName = platform === 'telegram' ? 'تلكرام ✈️' : 'انستكرام 📸';
+            const contactInfo = socialHandle ? `📲 *حساب التواصل (${platformName}):* \`${socialHandle}\`` : `📲 *حساب التواصل:* لم يتم إدخاله`;
 
             let orderText = `🛍️ *طلب جديد من متجر ياسه*\n\n`;
             orderText += `👤 *الاسم:* ${name}\n`;
             orderText += `📞 *الهاتف:* \`${phone}\`\n`;
-            orderText += `📲 *حساب التواصل (${platformName}):* \`${socialHandle}\`\n`;
+            orderText += `${contactInfo}\n`;
             orderText += `📍 *العنوان:* ${address}\n\n`;
             orderText += `🛒 *تفاصيل المنتجات:*\n`;
 
