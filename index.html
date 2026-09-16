@@ -12,7 +12,7 @@
 
     <style>
         :root {
-            --primary-color: #6b0f1a; /* عنابي فاخر مستوحى من اللوجو */
+            --primary-color: #6b0f1a; /* عنابي فاخر */
             --primary-dark: #4a0710;
             --accent-gold: #d4af37;  /* ذهبي فاخر */
             --bg-color: #fcf9f9;
@@ -80,7 +80,6 @@
         .catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 14px; }
         .product-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; box-shadow: 0 3px 10px rgba(0,0,0,0.05); border: 1px solid #f0e6e6; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
         
-        /* معرض الصور المصغر */
         .product-gallery { position: relative; width: 100%; height: 180px; background-color: #f9f9f9; overflow: hidden; cursor: pointer; }
         .product-img { width: 100%; height: 100%; object-fit: cover; }
         .gallery-nav {
@@ -108,7 +107,7 @@
         .btn-add { background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); color: white; border: none; padding: 9px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(107,15,26,0.2); }
         .btn-delete-product { position: absolute; top: 6px; right: 6px; background: rgba(255, 0, 0, 0.85); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display: none; z-index: 3; }
 
-        /* زر السلة العائم في الأسفل */
+        /* زر السلة العائم */
         .floating-cart-bar {
             position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
             width: 90%; max-width: 450px;
@@ -122,7 +121,7 @@
         .cart-badge-count { background: var(--accent-gold); color: var(--primary-dark); padding: 2px 8px; border-radius: 12px; font-size: 0.85rem; font-weight: 800; }
         .cart-bar-btn { background: white; color: var(--primary-color); border: none; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; }
 
-        /* مودال السلة المنبثق عند الضغط */
+        /* مودال السلة */
         .cart-modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: flex-end;
@@ -143,7 +142,45 @@
         .cart-items { max-height: 180px; overflow-y: auto; margin-bottom: 12px; }
         .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed #eee; }
         .btn-remove { background: #ff5252; color: white; border: none; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
-        .cart-total { font-size: 1.1rem; font-weight: bold; margin-bottom: 15px; text-align: left; color: var(--primary-color); }
+        
+        /* قسم ملخص الحساب والتوصيل */
+        .cart-summary-box {
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+            color: #444;
+        }
+        .summary-row.total-row {
+            border-top: 1px solid #ddd;
+            padding-top: 8px;
+            margin-top: 6px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        /* مستطيل النيون التوضيحي للتوصيل */
+        .delivery-notice-badge {
+            background: #ffebee;
+            color: #d32f2f;
+            border: 1.5px solid #ff1744;
+            box-shadow: 0 0 8px rgba(255, 23, 68, 0.25);
+            text-align: center;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
         .checkout-form label { display: block; margin-bottom: 4px; font-size: 0.85rem; font-weight: bold; }
         .checkout-form input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; }
         .btn-submit { background: linear-gradient(135deg, #25d366, #128c7e); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 1rem; font-weight: bold; }
@@ -194,10 +231,8 @@
     <header>
         <button class="admin-toggle-btn" onclick="toggleAdminPanel()">⚙️ لوحة الإدارة</button>
         
-        <!-- اللوجو الخاص بمتجر ياسه -->
         <img src="https://raw.githubusercontent.com/h1j17/Yasa1h/main/logo.png" alt="لوجو متجر ياسه" class="brand-logo" onerror="this.src='https://via.placeholder.com/90?text=YASA'">
         
-        <!-- العنوان المحدث حسب طلبك -->
         <h1>مـتـجـر 𝐘𝐀𝐒𝐀 لـلـحـقـائـب</h1>
         <p>أرقى الموديلات والحقائب النسائية</p>
 
@@ -239,7 +274,7 @@
         </div>
     </div>
 
-    <!-- الشريط العائم للسلة مثبت بأسفل الشاشة -->
+    <!-- الشريط العائم للسلة بأسفل الشاشة -->
     <div class="floating-cart-bar" onclick="openCartModal()">
         <div class="cart-bar-info">
             <i class="fa-shopping-bag fas"></i>
@@ -264,8 +299,23 @@
                 <p class="empty-cart-msg">السلة فارغة حالياً</p>
             </div>
             
-            <div class="cart-total">
-                المجموع الكلي: <span id="cartTotal">0</span> د.ع
+            <!-- ملخص المجموع والتوصيل -->
+            <div class="cart-summary-box" id="cartSummaryBox">
+                <div class="summary-row">
+                    <span>مجموع الحقائب:</span>
+                    <span><strong id="itemsTotal">0</strong> د.ع</span>
+                </div>
+                <div class="summary-row">
+                    <span>مبلغ التوصيل:</span>
+                    <span><strong id="deliveryFee">5,000</strong> د.ع</span>
+                </div>
+                <div class="summary-row total-row">
+                    <span>المجموع الكلي:</span>
+                    <span><strong id="cartTotal">0</strong> د.ع</span>
+                </div>
+                <div class="delivery-notice-badge">
+                    🚚 تم إضافة مبلغ التوصيل (5 ألف) لجميع المحافظات
+                </div>
             </div>
 
             <h3 style="color: var(--primary-color); font-size: 1rem; margin-bottom: 8px;">بيانات التوصيل 📦</h3>
@@ -318,6 +368,8 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+
+        const DELIVERY_FEE = 5000; // أجور التوصيل الثابتة 5 آلاف
 
         let products = [];
         let cart = [];
@@ -519,28 +571,36 @@
 
         function updateCartUI() {
             const cartItemsContainer = document.getElementById('cartItems');
+            const itemsTotalElement = document.getElementById('itemsTotal');
             const cartTotalElement = document.getElementById('cartTotal');
             const floatingCartTotal = document.getElementById('floatingCartTotal');
             const cartCount = document.getElementById('cartCount');
+            const cartSummaryBox = document.getElementById('cartSummaryBox');
 
             let totalItems = 0;
-            let total = 0;
+            let itemsTotal = 0;
 
             cart.forEach(item => {
                 totalItems += item.quantity;
-                total += item.price * item.quantity;
+                itemsTotal += item.price * item.quantity;
             });
 
+            const finalTotal = cart.length > 0 ? (itemsTotal + DELIVERY_FEE) : 0;
+
             cartCount.innerText = totalItems;
-            cartTotalElement.innerText = total.toLocaleString();
-            floatingCartTotal.innerText = total.toLocaleString();
+            itemsTotalElement.innerText = itemsTotal.toLocaleString();
+            cartTotalElement.innerText = finalTotal.toLocaleString();
+            floatingCartTotal.innerText = finalTotal.toLocaleString();
 
             if (cart.length === 0) {
                 cartItemsContainer.innerHTML = '<p class="empty-cart-msg">السلة فارغة حالياً</p>';
+                cartSummaryBox.style.display = 'none';
                 return;
             }
 
+            cartSummaryBox.style.display = 'block';
             cartItemsContainer.innerHTML = '';
+            
             cart.forEach(item => {
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'cart-item';
@@ -571,20 +631,26 @@
             const phone = document.getElementById('phone').value;
             const address = document.getElementById('address').value;
 
+            let itemsTotal = 0;
+            cart.forEach(item => {
+                itemsTotal += item.price * item.quantity;
+            });
+            const finalTotal = itemsTotal + DELIVERY_FEE;
+
             let orderText = `🛍️ *طلب جديد من متجر ياسه*\n\n`;
             orderText += `👤 *الاسم:* ${name}\n`;
             orderText += `📞 *الهاتف:* ${phone}\n`;
             orderText += `📍 *العنوان:* ${address}\n\n`;
-            orderText += `🛒 *تفاصيل الطلب:*\n`;
+            orderText += `🛒 *تفاصيل الحقائب:*\n`;
 
-            let total = 0;
             cart.forEach(item => {
                 const subtotal = item.price * item.quantity;
-                total += subtotal;
                 orderText += `- ${item.name} (العدد: ${item.quantity}) = ${subtotal.toLocaleString()} د.ع\n`;
             });
 
-            orderText += `\n💰 *المجموع الكلي:* ${total.toLocaleString()} د.ع`;
+            orderText += `\n💰 *مجموع الحقائب:* ${itemsTotal.toLocaleString()} د.ع`;
+            orderText += `\n🚚 *مبلغ التوصيل:* ${DELIVERY_FEE.toLocaleString()} د.ع`;
+            orderText += `\n✨ *المجموع الكلي النهائي:* ${finalTotal.toLocaleString()} د.ع`;
 
             const BOT_TOKEN = "8911646351:AAHuAQsJSt_LX6Il2m6O7K1FVEaEJ-YpsaA";
             const CHAT_ID = "7461743496";
