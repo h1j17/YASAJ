@@ -191,6 +191,10 @@
             background: #fdf5f5; color: #a91e2c; border: 1.5px solid #e6a1a8;
             text-align: center; padding: 8px 10px; border-radius: 8px; font-size: 0.82rem; font-weight: bold; margin-top: 8px;
         }
+        .free-delivery-badge {
+            background: #f0fdf4; color: #166534; border: 1.5px solid #bbf7d0;
+            text-align: center; padding: 8px 10px; border-radius: 8px; font-size: 0.82rem; font-weight: bold; margin-top: 8px;
+        }
 
         .gift-choice-box {
             background: #fcf8f2; border: 1.5px solid #d4c3a3;
@@ -371,7 +375,7 @@
             </div>
         </div>
 
-        <!-- قسم الساعات (مخفي افتراضياً ويظهر عند الضغط على زر الساعات) -->
+        <!-- قسم الساعات -->
         <div id="sectionWatchesWrapper" style="display: none;">
             <div class="category-title-bar"><i class="fa-clock fas"></i> قسم الساعات الرجالية والنسائية</div>
             <div class="catalog" id="catalogWatches">
@@ -417,18 +421,17 @@
                 </div>
                 <div class="summary-row">
                     <span>مبلغ التوصيل:</span>
-                    <span><strong id="deliveryFee">5,000</strong> دينار عراقي</span>
+                    <span><strong id="deliveryFeeText">5,000</strong> دينار عراقي</span>
                 </div>
                 <div class="summary-row total-row">
                     <span>المجموع الكلي:</span>
                     <span><strong id="cartTotal">0</strong> دينار عراقي</span>
                 </div>
-                <div class="delivery-notice-badge">
-                    🚚 تم إضافة مبلغ التوصيل (5,000 دينار عراقي) لجميع المحافظات
-                </div>
+                <div id="deliveryBadgeContainer"></div>
             </div>
 
-            <div class="gift-choice-box">
+            <!-- خيار الهدية/التوصيل المجاني (يظهر فقط لزبائن قسم الحقائب أو الطلبات العامة للحقائب) -->
+            <div class="gift-choice-box" id="giftChoiceBoxWrapper">
                 <span class="gift-choice-title">اختر واحده فقط:</span>
                 <div class="gift-radio-group">
                     <label class="gift-radio-option">
@@ -510,7 +513,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        const DELIVERY_FEE = 5000;
+        const STANDARD_DELIVERY_FEE = 5000;
 
         let products = [];
         let cart = [];
@@ -528,18 +531,24 @@
             const watchesWrapper = document.getElementById('sectionWatchesWrapper');
             const btnBags = document.getElementById('btnTabBags');
             const btnWatches = document.getElementById('btnTabWatches');
+            const giftBoxWrapper = document.getElementById('giftChoiceBoxWrapper');
 
             if (tabName === 'bags') {
                 bagsWrapper.style.display = 'block';
                 watchesWrapper.style.display = 'none';
                 btnBags.classList.add('active');
                 btnWatches.classList.remove('active');
+                // إظهار خانة الهدايا لزبون الحقائب
+                giftBoxWrapper.style.display = 'block';
             } else {
                 bagsWrapper.style.display = 'none';
                 watchesWrapper.style.display = 'block';
                 btnWatches.classList.add('active');
                 btnBags.classList.remove('active');
+                // إخفاء خانة الهدايا لزبون الساعات
+                giftBoxWrapper.style.display = 'none';
             }
+            updateCartUI();
         }
 
         const cachedProducts = localStorage.getItem('yasa_cached_products');
@@ -557,7 +566,6 @@
                 Object.keys(data).forEach(key => {
                     const prod = data[key];
                     let imgs = prod.images || (prod.image ? [prod.image] : []);
-                    // تصنيف افتراضي في حال المنتج قديم ولم يُحدد له تصنيف مسبقاً
                     let category = prod.category || 'bags';
                     products.push({ id: key, ...prod, category: category, images: imgs, activeImgIdx: 0 });
                 });
@@ -896,22 +904,51 @@
             const cartCount = document.getElementById('cartCount');
             const bagsCountText = document.getElementById('bagsCountText');
             const cartSummaryBox = document.getElementById('cartSummaryBox');
+            const deliveryFeeText = document.getElementById('deliveryFeeText');
+            const deliveryBadgeContainer = document.getElementById('deliveryBadgeContainer');
 
             let totalItems = 0;
             let itemsTotal = 0;
+            let totalWatchesCount = 0;
+            let totalBagsCount = 0;
 
             cart.forEach(item => {
                 totalItems += item.quantity;
                 itemsTotal += Number(item.price) * item.quantity;
+                if (item.category === 'watches') {
+                    totalWatchesCount += item.quantity;
+                } else if (item.category === 'bags') {
+                    totalBagsCount += item.quantity;
+                }
             });
 
-            const finalTotal = cart.length > 0 ? (itemsTotal + DELIVERY_FEE) : 0;
+            // حساب التوصيل المجاني الخاص بالساعات أو الطلبات المشتركة:
+            // - ساعتين أو أكثر (توصيل مجاني)
+            // - أو حقيبة أو أكثر + ساعتين أو أكثر (توصيل مجاني)
+            // - قطعة ساعة واحدة وحقيبة واحدة (ينضاف توصيل)
+            // - ساعتين وحقيبة أو أكثر (يلغى التوصيل)
+            let currentDeliveryFee = STANDARD_DELIVERY_FEE;
+            let isFreeDelivery = false;
+
+            if (totalWatchesCount >= 2 || (totalWatchesCount >= 2 && totalBagsCount >= 1)) {
+                currentDeliveryFee = 0;
+                isFreeDelivery = true;
+            }
+
+            const finalTotal = cart.length > 0 ? (itemsTotal + currentDeliveryFee) : 0;
 
             cartCount.innerText = totalItems;
             bagsCountText.innerText = `${totalItems} قطع`;
             itemsTotalElement.innerText = itemsTotal.toLocaleString();
             cartTotalElement.innerText = finalTotal.toLocaleString();
             floatingCartTotal.innerText = finalTotal.toLocaleString();
+            deliveryFeeText.innerText = currentDeliveryFee.toLocaleString();
+
+            if (isFreeDelivery) {
+                deliveryBadgeContainer.innerHTML = `<div class="free-delivery-badge">🎉 توصيل مجاني تلقائي لأنك حجزت قطعتين (أو أكثر) من الساعات!</div>`;
+            } else {
+                deliveryBadgeContainer.innerHTML = `<div class="delivery-notice-badge">🚚 تم إضافة مبلغ التوصيل (5,000 دينار عراقي) لجميع المحافظات</div>`;
+            }
 
             if (cart.length === 0) {
                 cartItemsContainer.innerHTML = '<p class="empty-cart-msg">السلة فارغة حالياً</p>';
@@ -948,7 +985,11 @@
             const phone = document.getElementById('phone').value.trim();
             const address = document.getElementById('address').value.trim();
             const orderNote = document.getElementById('orderNote').value.trim();
-            const giftChoice = document.querySelector('input[name="giftChoice"]:checked').value;
+            
+            // خيار الهدية يظهر فقط في قسم الحقائب
+            const giftChoiceInput = document.querySelector('input[name="giftChoice"]:checked');
+            const giftChoice = (currentTab === 'bags' && giftChoiceInput) ? giftChoiceInput.value : 'لا يوجد (قسم الساعات)';
+
             const platform = document.querySelector('input[name="contactPlatform"]:checked').value;
             const socialHandle = document.getElementById('socialHandle').value.trim();
 
@@ -964,11 +1005,21 @@
 
             let totalItems = 0;
             let itemsTotal = 0;
+            let totalWatchesCount = 0;
+            let totalBagsCount = 0;
+
             cart.forEach(item => {
                 totalItems += item.quantity;
                 itemsTotal += item.price * item.quantity;
+                if (item.category === 'watches') totalWatchesCount += item.quantity;
+                if (item.category === 'bags') totalBagsCount += item.quantity;
             });
-            const finalTotal = itemsTotal + DELIVERY_FEE;
+
+            let currentDeliveryFee = STANDARD_DELIVERY_FEE;
+            if (totalWatchesCount >= 2 || (totalWatchesCount >= 2 && totalBagsCount >= 1)) {
+                currentDeliveryFee = 0;
+            }
+            const finalTotal = itemsTotal + currentDeliveryFee;
 
             const platformName = platform === 'telegram' ? 'تلكرام ✈️' : 'انستكرام 📸';
             const contactInfo = socialHandle ? `📲 *حساب التواصل (${platformName}):* \`${socialHandle}\`` : `📲 *حساب التواصل:* لم يتم إدخاله`;
@@ -978,7 +1029,11 @@
             orderText += `📞 *الهاتف:* \`${phone}\`\n`;
             orderText += `${contactInfo}\n`;
             orderText += `📍 *العنوان:* ${address}\n`;
-            orderText += `🎁 *اختيار العرض (اختر واحده فقط):* ${giftChoice}\n`;
+            if (currentTab === 'bags') {
+                orderText += `🎁 *اختيار العرض:* ${giftChoice}\n`;
+            } else {
+                orderText += `⌚ *طلب خاص بالساعات* (توصيل مجاني تلقائي لطلب قطعتين أو أكثر)\n`;
+            }
             if (orderNote) {
                 orderText += `📝 *ملاحظة موظفة التجهيز:* ${orderNote}\n`;
             }
@@ -991,7 +1046,7 @@
 
             orderText += `\n🛍️ *عدد القطع:* ${totalItems} قطع`;
             orderText += `\n💰 *مجموع سعر المنتجات:* ${itemsTotal.toLocaleString()} دينار عراقي`;
-            orderText += `\n🚚 *مبلغ التوصيل:* ${DELIVERY_FEE.toLocaleString()} دينار عراقي`;
+            orderText += `\n🚚 *مبلغ التوصيل:* ${currentDeliveryFee === 0 ? 'مجاناً 🎉' : currentDeliveryFee.toLocaleString() + ' دينار عراقي'}`;
             orderText += `\n✨ *المجموع الكلي النهائي:* ${finalTotal.toLocaleString()} دينار عراقي`;
 
             const BOT_TOKEN = "8911646351:AAHuAQsJSt_LX6Il2m6O7K1FVEaEJ-YpsaA";
