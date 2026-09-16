@@ -55,20 +55,44 @@
         .admin-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; align-items: end; }
         .admin-form div { display: flex; flex-direction: column; }
         .admin-form label { font-size: 0.8rem; font-weight: bold; margin-bottom: 4px; }
-        .admin-form input { padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.85rem; }
+        .admin-form input, .admin-form textarea { padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.85rem; }
+        .admin-form textarea { resize: vertical; height: 38px; }
         .btn-save-product { background-color: #ff9800; color: white; border: none; padding: 9px; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
         .container { max-width: 1100px; margin: 15px auto; padding: 0 12px; display: grid; grid-template-columns: 2fr 1fr; gap: 15px; }
         @media (max-width: 768px) { .container { grid-template-columns: 1fr; } }
 
-        .catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
-        .product-card { background: var(--card-bg); border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.06); position: relative; }
-        .product-img { width: 100%; height: 160px; object-fit: cover; background-color: #eee; }
-        .product-info { padding: 10px; text-align: center; }
-        .product-title { font-size: 0.95rem; margin-bottom: 6px; font-weight: bold; }
-        .product-price { color: var(--primary-color); font-weight: bold; font-size: 0.9rem; margin-bottom: 10px; }
+        .catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+        .product-card { background: var(--card-bg); border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.06); position: relative; display: flex; flex-direction: column; justify-content: space-between; }
+        
+        /* معرض الصور المصغر */
+        .product-gallery { position: relative; width: 100%; height: 170px; background-color: #eee; overflow: hidden; cursor: pointer; }
+        .product-img { width: 100%; height: 100%; object-fit: cover; }
+        .gallery-nav {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(0,0,0,0.5); color: white; border: none;
+            width: 24px; height: 24px; border-radius: 50%; font-size: 0.7rem;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2;
+        }
+        .gallery-prev { right: 5px; }
+        .gallery-next { left: 5px; }
+        .gallery-dots { position: absolute; bottom: 5px; width: 100%; display: flex; justify-content: center; gap: 4px; z-index: 2; }
+        .dot { width: 6px; height: 6px; background: rgba(255,255,255,0.5); border-radius: 50%; }
+        .dot.active { background: white; width: 8px; border-radius: 4px; }
+
+        .zoom-badge {
+            position: absolute; top: 6px; left: 6px;
+            background: rgba(0,0,0,0.6); color: white;
+            padding: 2px 6px; border-radius: 4px; font-size: 0.65rem;
+            z-index: 2;
+        }
+
+        .product-info { padding: 10px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-title { font-size: 0.95rem; margin-bottom: 4px; font-weight: bold; }
+        .product-desc { font-size: 0.75rem; color: #666; margin-bottom: 8px; line-height: 1.3; background: #f0f0f0; padding: 4px 6px; border-radius: 4px; }
+        .product-price { color: var(--primary-color); font-weight: bold; font-size: 0.9rem; margin-bottom: 8px; }
         .btn-add { background-color: var(--primary-color); color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; }
-        .btn-delete-product { position: absolute; top: 6px; right: 6px; background: rgba(255, 0, 0, 0.85); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display: none; }
+        .btn-delete-product { position: absolute; top: 6px; right: 6px; background: rgba(255, 0, 0, 0.85); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display: none; z-index: 3; }
 
         .cart-section { background: var(--card-bg); padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.06); height: fit-content; }
         .cart-section h2 { margin-bottom: 12px; border-bottom: 2px solid var(--bg-color); padding-bottom: 6px; color: var(--primary-color); font-size: 1.1rem; }
@@ -81,6 +105,29 @@
         .btn-submit { background-color: #25d366; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; font-size: 0.95rem; font-weight: bold; }
         .empty-cart-msg { text-align: center; color: #888; font-size: 0.85rem; }
         .loading-msg { text-align: center; grid-column: 1 / -1; color: #666; padding: 20px; }
+
+        /* نافذة مشاهدة الصورة على قد الشاشة */
+        .image-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.92); display: none; justify-content: center; align-items: center;
+            z-index: 10000; padding: 15px;
+        }
+        .image-modal-img {
+            max-width: 95%; max-height: 80vh; border-radius: 12px;
+            box-shadow: 0 5px 25px rgba(255,255,255,0.15); object-fit: contain;
+        }
+        .image-modal-close {
+            position: absolute; top: 15px; right: 20px; color: white;
+            font-size: 32px; font-weight: bold; cursor: pointer; background: rgba(255,255,255,0.2);
+            width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+        }
+        .modal-nav {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(255,255,255,0.2); color: white; border: none;
+            width: 45px; height: 45px; border-radius: 50%; font-size: 1.2rem; cursor: pointer;
+        }
+        .modal-prev { right: 15px; }
+        .modal-next { left: 15px; }
 
         /* نافذة الهدية المنبثقة */
         .gift-modal-overlay {
@@ -131,8 +178,12 @@
                 <input type="number" id="newBagPrice" placeholder="25000">
             </div>
             <div>
-                <label>اختر الصورة من جهازك:</label>
-                <input type="file" id="newBagImage" accept="image/*">
+                <label>التفاصيل والأبعاد:</label>
+                <textarea id="newBagDesc" placeholder="مثال: الطول 30سم، العرض 25سم، تكفي للدوام والأوراق"></textarea>
+            </div>
+            <div>
+                <label>اختر الصور (يمكن تحديد أكثر من صورة):</label>
+                <input type="file" id="newBagImage" accept="image/*" multiple>
             </div>
             <button class="btn-save-product" id="saveBtn" onclick="addNewProduct()">إضافة للكتالوج 🚀</button>
         </div>
@@ -171,6 +222,14 @@
         </div>
     </div>
 
+    <!-- نافذة مشاهدة الصورة على قد الشاشة مع التنقل -->
+    <div class="image-modal-overlay" id="imageModal">
+        <span class="image-modal-close" onclick="closeImageModal()">&times;</span>
+        <button class="modal-nav modal-prev" onclick="prevModalImg()"><i class="fa-chevron-right fas"></i></button>
+        <img id="modalImage" class="image-modal-img" src="" alt="عرض الحقيبة">
+        <button class="modal-nav modal-next" onclick="nextModalImg()"><i class="fa-chevron-left fas"></i></button>
+    </div>
+
     <!-- نافذة الهدية المنبثقة -->
     <div class="gift-modal-overlay" id="giftModal">
         <div class="gift-modal-card">
@@ -182,7 +241,7 @@
     </div>
 
     <script>
-        // إعدادات Firebase الخاصة بمتجر ياسه
+        // إعدادات Firebase الخاص بمتجر ياسه
         const firebaseConfig = {
             apiKey: "AIzaSyD3_r0w6oFm6xG_r8Z-eqMz7zWrA3FIrSQ",
             authDomain: "yasa-store.firebaseapp.com",
@@ -201,12 +260,19 @@
         let cart = [];
         let isAdmin = false;
 
+        // متغيرات للتحكم بالصور في النافذة المنبثقة
+        let activeImagesList = [];
+        let activeImageIdx = 0;
+
         db.ref('products').on('value', (snapshot) => {
             const data = snapshot.val();
             products = [];
             if (data) {
                 Object.keys(data).forEach(key => {
-                    products.push({ id: key, ...data[key] });
+                    const prod = data[key];
+                    // التأكد من دعم الصور المتعددة أو القديمة
+                    let imgs = prod.images || (prod.image ? [prod.image] : []);
+                    products.push({ id: key, ...prod, images: imgs, activeImgIdx: 0 });
                 });
             }
             renderProducts();
@@ -239,60 +305,123 @@
                 return;
             }
 
-            products.forEach(product => {
+            products.forEach((product, pIdx) => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
+                
+                const imgs = product.images.length > 0 ? product.images : ['https://via.placeholder.com/200'];
+                const currentIdx = product.activeImgIdx || 0;
+
                 card.innerHTML = `
                     ${isAdmin ? `<button class="btn-delete-product" style="display:block" onclick="deleteProduct('${product.id}')">✕</button>` : ''}
-                    <img src="${product.image}" alt="${product.name}" class="product-img">
+                    <div class="product-gallery">
+                        <div class="zoom-badge"><i class="fa-search-plus fas"></i> تكبير (${imgs.length})</div>
+                        <img src="${imgs[currentIdx]}" alt="${product.name}" class="product-img" onclick="openImageModal(${pIdx}, ${currentIdx})">
+                        
+                        ${imgs.length > 1 ? `
+                            <button class="gallery-nav gallery-prev" onclick="changeCardImg(event, ${pIdx}, -1)"><i class="fa-chevron-right fas"></i></button>
+                            <button class="gallery-nav gallery-next" onclick="changeCardImg(event, ${pIdx}, 1)"><i class="fa-chevron-left fas"></i></button>
+                            <div class="gallery-dots">
+                                ${imgs.map((_, i) => `<span class="dot ${i === currentIdx ? 'active' : ''}"></span>`).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                    
                     <div class="product-info">
-                        <div class="product-title">${product.name}</div>
-                        <div class="product-price">${Number(product.price).toLocaleString()} د.ع</div>
-                        <button class="btn-add" onclick="addToCart('${product.id}')">إضافة للسلة 🛒</button>
+                        <div>
+                            <div class="product-title">${product.name}</div>
+                            ${product.desc ? `<div class="product-desc">${product.desc}</div>` : ''}
+                        </div>
+                        <div>
+                            <div class="product-price">${Number(product.price).toLocaleString()} د.ع</div>
+                            <button class="btn-add" onclick="addToCart('${product.id}')">إضافة للسلة 🛒</button>
+                        </div>
                     </div>
                 `;
                 catalogContainer.appendChild(card);
             });
         }
 
+        function changeCardImg(event, pIdx, dir) {
+            event.stopPropagation();
+            const prod = products[pIdx];
+            const max = prod.images.length;
+            prod.activeImgIdx = (prod.activeImgIdx + dir + max) % max;
+            renderProducts();
+        }
+
+        function openImageModal(pIdx, imgIdx) {
+            activeImagesList = products[pIdx].images;
+            activeImageIdx = imgIdx;
+            
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            
+            modalImg.src = activeImagesList[activeImageIdx];
+            modal.style.display = 'flex';
+        }
+
+        function prevModalImg() {
+            if (activeImagesList.length <= 1) return;
+            activeImageIdx = (activeImageIdx - 1 + activeImagesList.length) % activeImagesList.length;
+            document.getElementById('modalImage').src = activeImagesList[activeImageIdx];
+        }
+
+        function nextModalImg() {
+            if (activeImagesList.length <= 1) return;
+            activeImageIdx = (activeImageIdx + 1) % activeImagesList.length;
+            document.getElementById('modalImage').src = activeImagesList[activeImageIdx];
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
         function addNewProduct() {
             const nameInput = document.getElementById('newBagName');
             const priceInput = document.getElementById('newBagPrice');
+            const descInput = document.getElementById('newBagDesc');
             const imageInput = document.getElementById('newBagImage');
             const saveBtn = document.getElementById('saveBtn');
 
             if (!nameInput.value || !priceInput.value || imageInput.files.length === 0) {
-                alert('يرجى كتابة الاسم والسعر واختيار صورة من جهازك!');
+                alert('يرجى كتابة الاسم والسعر واختيار صورة واحدة على الأقل!');
                 return;
             }
 
             saveBtn.disabled = true;
-            saveBtn.innerText = 'جاري الحفظ بالسحاب...';
+            saveBtn.innerText = 'جاري رفع الصور... ⏳';
 
-            const file = imageInput.files[0];
-            const reader = new FileReader();
+            const files = Array.from(imageInput.files);
+            const imagePromises = files.map(file => {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.readAsDataURL(file);
+                });
+            });
 
-            reader.onload = function(e) {
+            Promise.all(imagePromises).then(base64Images => {
                 const newProductRef = db.ref('products').push();
                 newProductRef.set({
                     name: nameInput.value,
                     price: Number(priceInput.value),
-                    image: e.target.result
+                    desc: descInput.value || "",
+                    images: base64Images
                 }).then(() => {
                     nameInput.value = '';
                     priceInput.value = '';
+                    descInput.value = '';
                     imageInput.value = '';
                     saveBtn.disabled = false;
                     saveBtn.innerText = 'إضافة للكتالوج 🚀';
-                    alert('تمت إضافة الحقيبة للسحاب وستظهر الآن لجميع الزبائن!');
+                    alert('تمت إضافة الحقيبة بنجاح مع الصور والتفاصيل!');
                 }).catch(error => {
                     alert('حدث خطأ أثناء الحفظ: ' + error.message);
                     saveBtn.disabled = false;
                     saveBtn.innerText = 'إضافة للكتالوج 🚀';
                 });
-            };
-
-            reader.readAsDataURL(file);
+            });
         }
 
         function deleteProduct(productId) {
@@ -396,7 +525,6 @@
                 });
 
                 if (response.ok) {
-                    // إظهار نافذة المفاجأة عند نجاح الإرسال
                     document.getElementById('giftModal').style.display = 'flex';
                     cart = [];
                     updateCartUI();
