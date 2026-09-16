@@ -12,9 +12,9 @@
 
     <style>
         :root {
-            --primary-color: #6b0f1a; /* عنابي فاخر */
+            --primary-color: #6b0f1a;
             --primary-dark: #4a0710;
-            --accent-gold: #d4af37;  /* ذهبي فاخر */
+            --accent-gold: #d4af37;
             --bg-color: #fcf9f9;
             --card-bg: #ffffff;
             --text-color: #2b2b2b;
@@ -107,7 +107,7 @@
         .btn-add { background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); color: white; border: none; padding: 9px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(107,15,26,0.2); }
         .btn-delete-product { position: absolute; top: 6px; right: 6px; background: rgba(255, 0, 0, 0.85); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display: none; z-index: 3; }
 
-        /* زر السلة العائم */
+        /* الشريط العائم للسلة */
         .floating-cart-bar {
             position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
             width: 90%; max-width: 450px;
@@ -121,7 +121,7 @@
         .cart-badge-count { background: var(--accent-gold); color: var(--primary-dark); padding: 2px 8px; border-radius: 12px; font-size: 0.85rem; font-weight: 800; }
         .cart-bar-btn { background: white; color: var(--primary-color); border: none; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; }
 
-        /* مودال السلة */
+        /* نافذة السلة */
         .cart-modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: flex-end;
@@ -143,7 +143,7 @@
         .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed #eee; }
         .btn-remove { background: #ff5252; color: white; border: none; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
         
-        /* قسم ملخص الحساب والتوصيل */
+        /* مربع حساب المجموع */
         .cart-summary-box {
             background: #fafafa;
             border: 1px solid #eee;
@@ -155,7 +155,7 @@
             display: flex;
             justify-content: space-between;
             font-size: 0.95rem;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             color: #444;
         }
         .summary-row.total-row {
@@ -167,7 +167,7 @@
             color: var(--primary-color);
         }
         
-        /* مستطيل النيون التوضيحي للتوصيل */
+        /* المستطيل التوضيحي للتوصيل */
         .delivery-notice-badge {
             background: #ffebee;
             color: #d32f2f;
@@ -187,7 +187,7 @@
         .empty-cart-msg { text-align: center; color: #888; font-size: 0.9rem; padding: 10px 0; }
         .loading-msg { text-align: center; grid-column: 1 / -1; color: #666; padding: 30px; }
 
-        /* مودال صور الشاشة الكاملة */
+        /* مودال الشاشة الكاملة للصور */
         .image-modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.93); display: none; justify-content: center; align-items: center;
@@ -207,7 +207,7 @@
         .modal-prev { right: 15px; }
         .modal-next { left: 15px; }
 
-        /* نافذة الهدية المنبثقة */
+        /* نافذة الهدية */
         .gift-modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center;
@@ -253,15 +253,15 @@
                 <input type="text" id="newBagName" placeholder="مثال: حقيبة جلد ماركة">
             </div>
             <div>
-                <label>السعر (بالدينار):</label>
-                <input type="number" id="newBagPrice" placeholder="25000">
+                <label>السعر (أدخل الرقم كاملاً مثل 10000 أو 7500):</label>
+                <input type="number" id="newBagPrice" placeholder="10000">
             </div>
             <div>
                 <label>التفاصيل والأبعاد:</label>
                 <textarea id="newBagDesc" placeholder="مثال: الطول 30سم، العرض 25سم، تكفي للدوام والكلية"></textarea>
             </div>
             <div>
-                <label>اختر الصور (يمكن اختيار أكثر من صورة):</label>
+                <label>اختر الصور:</label>
                 <input type="file" id="newBagImage" accept="image/*" multiple>
             </div>
             <button class="btn-save-product" id="saveBtn" onclick="addNewProduct()">إضافة للكتالوج 🚀</button>
@@ -274,7 +274,7 @@
         </div>
     </div>
 
-    <!-- الشريط العائم للسلة بأسفل الشاشة -->
+    <!-- الشريط العائم بالسلة -->
     <div class="floating-cart-bar" onclick="openCartModal()">
         <div class="cart-bar-info">
             <i class="fa-shopping-bag fas"></i>
@@ -282,12 +282,12 @@
             <span class="cart-badge-count" id="cartCount">0</span>
         </div>
         <div>
-            <span id="floatingCartTotal">0</span> د.ع
+            <span id="floatingCartTotal">0</span> دينار عراقي
             <button class="cart-bar-btn" style="margin-right: 8px;">عرض السلة 🛍️</button>
         </div>
     </div>
 
-    <!-- نافذة سلة المشتريات المنبثقة -->
+    <!-- نافذة سلة المشتريات -->
     <div class="cart-modal-overlay" id="cartModal">
         <div class="cart-modal-content">
             <div class="cart-modal-header">
@@ -299,22 +299,26 @@
                 <p class="empty-cart-msg">السلة فارغة حالياً</p>
             </div>
             
-            <!-- ملخص المجموع والتوصيل -->
+            <!-- ملخص الحساب والإجماليات -->
             <div class="cart-summary-box" id="cartSummaryBox">
                 <div class="summary-row">
-                    <span>مجموع الحقائب:</span>
-                    <span><strong id="itemsTotal">0</strong> د.ع</span>
+                    <span>عدد الحقائب:</span>
+                    <span><strong id="bagsCountText">0 حقائب</strong></span>
+                </div>
+                <div class="summary-row">
+                    <span>مجموع سعر الحقائب:</span>
+                    <span><strong id="itemsTotal">0</strong> دينار عراقي</span>
                 </div>
                 <div class="summary-row">
                     <span>مبلغ التوصيل:</span>
-                    <span><strong id="deliveryFee">5,000</strong> د.ع</span>
+                    <span><strong id="deliveryFee">5,000</strong> دينار عراقي</span>
                 </div>
                 <div class="summary-row total-row">
                     <span>المجموع الكلي:</span>
-                    <span><strong id="cartTotal">0</strong> د.ع</span>
+                    <span><strong id="cartTotal">0</strong> دينار عراقي</span>
                 </div>
                 <div class="delivery-notice-badge">
-                    🚚 تم إضافة مبلغ التوصيل (5 ألف) لجميع المحافظات
+                    🚚 تم إضافة مبلغ التوصيل (5,000 دينار عراقي) لجميع المحافظات
                 </div>
             </div>
 
@@ -336,7 +340,7 @@
         </div>
     </div>
 
-    <!-- نافذة مشاهدة الصور fullscreen -->
+    <!-- مودال تكبير الصور -->
     <div class="image-modal-overlay" id="imageModal">
         <span class="image-modal-close" onclick="closeImageModal()">&times;</span>
         <button class="modal-nav modal-prev" onclick="prevModalImg()"><i class="fa-chevron-right fas"></i></button>
@@ -369,7 +373,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        const DELIVERY_FEE = 5000; // أجور التوصيل الثابتة 5 آلاف
+        const DELIVERY_FEE = 5000;
 
         let products = [];
         let cart = [];
@@ -446,7 +450,7 @@
                             ${product.desc ? `<div class="product-desc">${product.desc}</div>` : ''}
                         </div>
                         <div>
-                            <div class="product-price">${Number(product.price).toLocaleString()} د.ع</div>
+                            <div class="product-price">${Number(product.price).toLocaleString()} دينار عراقي</div>
                             <button class="btn-add" onclick="addToCart('${product.id}')">إضافة للسلة 🛒</button>
                         </div>
                     </div>
@@ -575,6 +579,7 @@
             const cartTotalElement = document.getElementById('cartTotal');
             const floatingCartTotal = document.getElementById('floatingCartTotal');
             const cartCount = document.getElementById('cartCount');
+            const bagsCountText = document.getElementById('bagsCountText');
             const cartSummaryBox = document.getElementById('cartSummaryBox');
 
             let totalItems = 0;
@@ -582,12 +587,13 @@
 
             cart.forEach(item => {
                 totalItems += item.quantity;
-                itemsTotal += item.price * item.quantity;
+                itemsTotal += Number(item.price) * item.quantity;
             });
 
             const finalTotal = cart.length > 0 ? (itemsTotal + DELIVERY_FEE) : 0;
 
             cartCount.innerText = totalItems;
+            bagsCountText.innerText = `${totalItems} حقائب`;
             itemsTotalElement.innerText = itemsTotal.toLocaleString();
             cartTotalElement.innerText = finalTotal.toLocaleString();
             floatingCartTotal.innerText = finalTotal.toLocaleString();
@@ -607,7 +613,7 @@
                 itemDiv.innerHTML = `
                     <div>
                         <div class="cart-item-title">${item.name} (${item.quantity})</div>
-                        <div class="cart-item-price" style="color: var(--primary-color); font-weight: bold;">${(item.price * item.quantity).toLocaleString()} د.ع</div>
+                        <div class="cart-item-price" style="color: var(--primary-color); font-weight: bold;">${(item.price * item.quantity).toLocaleString()} دينار عراقي</div>
                     </div>
                     <button class="btn-remove" onclick="removeFromCart('${item.id}')">حذف</button>
                 `;
@@ -631,8 +637,10 @@
             const phone = document.getElementById('phone').value;
             const address = document.getElementById('address').value;
 
+            let totalItems = 0;
             let itemsTotal = 0;
             cart.forEach(item => {
+                totalItems += item.quantity;
                 itemsTotal += item.price * item.quantity;
             });
             const finalTotal = itemsTotal + DELIVERY_FEE;
@@ -645,12 +653,13 @@
 
             cart.forEach(item => {
                 const subtotal = item.price * item.quantity;
-                orderText += `- ${item.name} (العدد: ${item.quantity}) = ${subtotal.toLocaleString()} د.ع\n`;
+                orderText += `- ${item.name} (العدد: ${item.quantity}) = ${subtotal.toLocaleString()} دينار عراقي\n`;
             });
 
-            orderText += `\n💰 *مجموع الحقائب:* ${itemsTotal.toLocaleString()} د.ع`;
-            orderText += `\n🚚 *مبلغ التوصيل:* ${DELIVERY_FEE.toLocaleString()} د.ع`;
-            orderText += `\n✨ *المجموع الكلي النهائي:* ${finalTotal.toLocaleString()} د.ع`;
+            orderText += `\n🛍️ *عدد الحقائب:* ${totalItems} حقائب`;
+            orderText += `\n💰 *مجموع سعر الحقائب:* ${itemsTotal.toLocaleString()} دينار عراقي`;
+            orderText += `\n🚚 *مبلغ التوصيل:* ${DELIVERY_FEE.toLocaleString()} دينار عراقي`;
+            orderText += `\n✨ *المجموع الكلي النهائي:* ${finalTotal.toLocaleString()} دينار عراقي`;
 
             const BOT_TOKEN = "8911646351:AAHuAQsJSt_LX6Il2m6O7K1FVEaEJ-YpsaA";
             const CHAT_ID = "7461743496";
@@ -681,7 +690,7 @@
                 alert('تعذر الاتصال بالخادم، يرجى التأكد من اتصال الإنترنت.');
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fa-check-circle fas"></i> تأكيد وإرسال الطلب';
+                submitBtn.innerHTML = '<i class="fa-check-circle fas"></i> تأكيد وإرسال الطلب عبر التلكرام';
             }
         }
 
