@@ -50,39 +50,18 @@
             padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem;
         }
 
-        /* تنسيقات النصوص الجديدة في الهيدر */
-        header h1 {
-            font-size: 1.4rem;
-            margin-bottom: 8px;
-        }
+        header h1 { font-size: 1.4rem; margin-bottom: 8px; }
 
         .header-subtext {
-            font-size: 0.85rem;
-            line-height: 1.5;
-            color: #f3e5ab;
-            max-width: 650px;
-            margin: 0 auto 12px;
-            padding: 0 10px;
+            font-size: 0.85rem; line-height: 1.5; color: #f3e5ab;
+            max-width: 650px; margin: 0 auto 12px; padding: 0 10px;
         }
 
-        /* باجات الأقسام */
-        .category-badges {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-
+        .category-badges { display: flex; justify-content: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
         .cat-badge {
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid var(--accent-gold);
-            color: #ffffff;
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            backdrop-filter: blur(4px);
+            background: rgba(255, 255, 255, 0.12); border: 1px solid var(--accent-gold);
+            color: #ffffff; padding: 4px 12px; border-radius: 15px; font-size: 0.8rem;
+            font-weight: bold; backdrop-filter: blur(4px);
         }
 
         .social-bar { display: flex; justify-content: center; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
@@ -142,7 +121,6 @@
         .btn-add { background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); color: white; border: none; padding: 9px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(107,15,26,0.2); }
         .btn-delete-product { position: absolute; top: 6px; right: 6px; background: rgba(255, 0, 0, 0.85); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display: none; z-index: 3; }
 
-        /* الشريط العائم للسلة */
         .floating-cart-bar {
             position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
             width: 90%; max-width: 450px;
@@ -156,14 +134,13 @@
         .cart-badge-count { background: var(--accent-gold); color: var(--primary-dark); padding: 2px 8px; border-radius: 12px; font-size: 0.85rem; font-weight: 800; }
         .cart-bar-btn { background: white; color: var(--primary-color); border: none; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; }
 
-        /* نافذة السلة */
         .cart-modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: flex-end;
             z-index: 9999;
         }
         .cart-modal-content {
-            background: white; width: 100%; max-width: 500px; max-height: 85vh;
+            background: white; width: 100%; max-width: 500px; max-height: 88vh;
             border-top-left-radius: 20px; border-top-right-radius: 20px;
             padding: 20px; overflow-y: auto; animation: slideUp 0.3s ease-out;
             box-shadow: 0 -5px 25px rgba(0,0,0,0.2);
@@ -178,44 +155,31 @@
         .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed #eee; }
         .btn-remove { background: #ff5252; color: white; border: none; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
         
-        .cart-summary-box {
-            background: #fafafa;
-            border: 1px solid #eee;
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 15px;
-        }
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.95rem;
-            margin-bottom: 8px;
-            color: #444;
-        }
-        .summary-row.total-row {
-            border-top: 1px solid #ddd;
-            padding-top: 8px;
-            margin-top: 6px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
+        .cart-summary-box { background: #fafafa; border: 1px solid #eee; border-radius: 10px; padding: 12px; margin-bottom: 15px; }
+        .summary-row { display: flex; justify-content: space-between; font-size: 0.95rem; margin-bottom: 8px; color: #444; }
+        .summary-row.total-row { border-top: 1px solid #ddd; padding-top: 8px; margin-top: 6px; font-size: 1.1rem; font-weight: bold; color: var(--primary-color); }
         
         .delivery-notice-badge {
-            background: #ffebee;
-            color: #d32f2f;
-            border: 1.5px solid #ff1744;
-            box-shadow: 0 0 8px rgba(255, 23, 68, 0.25);
-            text-align: center;
-            padding: 8px 10px;
-            border-radius: 8px;
-            font-size: 0.82rem;
-            font-weight: bold;
-            margin-top: 8px;
+            background: #ffebee; color: #d32f2f; border: 1.5px solid #ff1744;
+            box-shadow: 0 0 8px rgba(255, 23, 68, 0.25); text-align: center;
+            padding: 8px 10px; border-radius: 8px; font-size: 0.82rem; font-weight: bold; margin-top: 8px;
         }
 
-        .checkout-form label { display: block; margin-bottom: 4px; font-size: 0.85rem; font-weight: bold; }
-        .checkout-form input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; }
+        .checkout-form label { display: block; margin-bottom: 4px; font-size: 0.85rem; font-weight: bold; color: #333; }
+        .checkout-form input[type="text"], .checkout-form input[type="tel"] {
+            width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem;
+        }
+
+        /* تصميم قسم اختيار وسيلة التواصل المباشرة */
+        .social-contact-selector {
+            background: #fdf8f8; border: 1.5px solid #f0d0d0;
+            border-radius: 10px; padding: 12px; margin-bottom: 14px;
+        }
+        .social-contact-title { font-size: 0.85rem; font-weight: bold; color: var(--primary-color); margin-bottom: 8px; display: block; }
+        .radio-group { display: flex; gap: 15px; margin-bottom: 10px; }
+        .radio-option { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold; color: #444; }
+        .radio-option input { accent-color: var(--primary-color); width: 16px; height: 16px; cursor: pointer; }
+
         .btn-submit { background: linear-gradient(135deg, #25d366, #128c7e); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 1rem; font-weight: bold; }
         .empty-cart-msg { text-align: center; color: #888; font-size: 0.9rem; padding: 10px 0; }
         .loading-msg { text-align: center; grid-column: 1 / -1; color: #666; padding: 30px; }
@@ -264,13 +228,9 @@
         
         <img src="https://raw.githubusercontent.com/h1j17/Yasa1h/main/logo.png" alt="لوجو متجر ياسه" class="brand-logo" onerror="this.src='https://via.placeholder.com/90?text=YASA'">
         
-        <!-- عنوان المتجر المعدل -->
         <h1>مـتـجـر 𝐘𝐀𝐒𝐀  للحقائب والساعات</h1>
-        
-        <!-- الوصف الجديد -->
         <p class="header-subtext">في 𝐘𝐀𝐒𝐀 نؤمن أن الحقيبة والساعة ليست مجرد إكسسوار، بل هي انعكاس لشخصيتچ. اكتشفي مجموعتنا من الحقائب الجلدية والساعات الفاخرة المصممة بعناية لتناسب أسلوب حياتچ</p>
 
-        <!-- باجات الأقسام الجديدة -->
         <div class="category-badges">
             <span class="cat-badge">﴿ساعات رجالية / نسائية﴾</span>
             <span class="cat-badge">﴿حقائب﴾</span>
@@ -366,11 +326,28 @@
                 <label for="name">الاسم الكامل:</label>
                 <input type="text" id="name" placeholder="أدخلي اسمك الكامل" required>
 
-                <label for="phone">رقم الهاتف:</label>
-                <input type="tel" id="phone" placeholder="07XXXXXXXXX" required>
+                <label for="phone">رقم الهاتف (11 رقم حصراً):</label>
+                <input type="tel" id="phone" placeholder="07XXXXXXXXX" maxlength="11" required>
 
                 <label for="address">المحافظة / العنوان المباشر:</label>
                 <input type="text" id="address" placeholder="بغداد / المنصور / قرب ..." required>
+
+                <!-- قسم اختيار خانة التواصل (تلكرام / انستكرام) -->
+                <div class="social-contact-selector">
+                    <span class="social-contact-title">اختر حظر/معرف التواصل للمتابعة عند التأخير:</span>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="contactPlatform" value="telegram" checked onclick="toggleSocialInput()">
+                            <i class="fa-telegram fab" style="color: #0088cc;"></i> تلكرام
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="contactPlatform" value="instagram" onclick="toggleSocialInput()">
+                            <i class="fa-instagram fab" style="color: #e1306c;"></i> انستكرام
+                        </label>
+                    </div>
+                    
+                    <input type="text" id="socialHandle" placeholder="أدخل معرف التلكرام (مثال: @username)" required>
+                </div>
 
                 <button type="submit" class="btn-submit" id="submitBtn">
                     <i class="fa-check-circle fas"></i> تأكيد وإرسال الطلب عبر التلكرام
@@ -541,6 +518,17 @@
             document.getElementById('cartModal').style.display = 'none';
         }
 
+        /* تبديل placeholder حسب خيار منصة التواصل */
+        function toggleSocialInput() {
+            const platform = document.querySelector('input[name="contactPlatform"]:checked').value;
+            const socialInput = document.getElementById('socialHandle');
+            if (platform === 'telegram') {
+                socialInput.placeholder = "أدخل معرف التلكرام (مثال: @username)";
+            } else {
+                socialInput.placeholder = "أدخل معرف الانستكرام (مثال: @username)";
+            }
+        }
+
         function addNewProduct() {
             const nameInput = document.getElementById('newBagName');
             const priceInput = document.getElementById('newBagPrice');
@@ -668,13 +656,28 @@
                 return;
             }
 
+            const name = document.getElementById('name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const platform = document.querySelector('input[name="contactPlatform"]:checked').value;
+            const socialHandle = document.getElementById('socialHandle').value.trim();
+
+            // فحص صحة رقم الهاتف (11 رقم)
+            const phoneRegex = /^[0-9]{11}$/;
+            if (!phoneRegex.test(phone)) {
+                alert('⚠️ رقم الهاتف غير صحيح! يجب أن يتكون من 11 رقماً حصراً.');
+                return;
+            }
+
+            // فحص إدخال معرف التواصل
+            if (!socialHandle) {
+                alert('⚠️ يرجى كتابة معرف حسابكِ (التلكرام أو الانستكرام) لضمان إمكانية التواصل معكِ!');
+                return;
+            }
+
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
             submitBtn.innerText = 'جاري الإرسال...';
-
-            const name = document.getElementById('name').value;
-            const phone = document.getElementById('phone').value;
-            const address = document.getElementById('address').value;
 
             let totalItems = 0;
             let itemsTotal = 0;
@@ -684,9 +687,12 @@
             });
             const finalTotal = itemsTotal + DELIVERY_FEE;
 
+            const platformName = platform === 'telegram' ? 'تلكرام ✈️' : 'انستكرام 📸';
+
             let orderText = `🛍️ *طلب جديد من متجر ياسه*\n\n`;
             orderText += `👤 *الاسم:* ${name}\n`;
-            orderText += `📞 *الهاتف:* ${phone}\n`;
+            orderText += `📞 *الهاتف:* \`${phone}\`\n`;
+            orderText += `📲 *حساب التواصل (${platformName}):* \`${socialHandle}\`\n`;
             orderText += `📍 *العنوان:* ${address}\n\n`;
             orderText += `🛒 *تفاصيل المنتجات:*\n`;
 
@@ -722,6 +728,7 @@
                     cart = [];
                     updateCartUI();
                     document.getElementById('orderForm').reset();
+                    toggleSocialInput();
                 } else {
                     alert('حدث خطأ أثناء إرسال الطلب.');
                 }
