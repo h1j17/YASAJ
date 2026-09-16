@@ -116,6 +116,15 @@
             padding: 2px 7px; border-radius: 4px; font-size: 0.65rem; z-index: 2;
         }
 
+        /* زر مشاهدة الفيديو على الكارت */
+        .video-badge-btn {
+            position: absolute; bottom: 8px; left: 8px;
+            background: linear-gradient(135deg, #ff0055, #ff5e00); color: white;
+            padding: 3px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: bold;
+            z-index: 2; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
         .product-info { padding: 10px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
         .product-title { font-size: 0.95rem; margin-bottom: 4px; font-weight: bold; color: var(--primary-dark); }
         .product-desc { font-size: 0.75rem; color: #555; margin-bottom: 8px; line-height: 1.3; background: #fdf5f5; padding: 5px; border-radius: 6px; border: 1px dashed #f0d0d0; }
@@ -196,7 +205,7 @@
         .empty-cart-msg { text-align: center; color: #888; font-size: 0.9rem; padding: 10px 0; }
         .loading-msg { text-align: center; grid-column: 1 / -1; color: #666; padding: 30px; }
 
-        /* نافذة إدخال الباسورد المخصصة مع خط النيون الفاخر */
+        /* نافذة إدخال الباسورد مع خط النيون */
         .neon-modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center;
@@ -207,40 +216,14 @@
             border-radius: 16px; padding: 25px 20px; max-width: 360px; width: 100%;
             text-align: center; box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
         }
-        /* تصميم خط النيون الفاخر لاسم حسن جلال */
         .neon-text-hassan {
-            font-size: 2rem;
-            font-weight: 900;
-            color: #fff;
-            text-transform: uppercase;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            text-shadow: 
-                0 0 5px #fff,
-                0 0 10px #fff,
-                0 0 20px var(--accent-gold),
-                0 0 30px var(--accent-gold),
-                0 0 40px #ff00de,
-                0 0 70px #ff00de;
-            animation: neonGlow 1.5s infinite alternate;
-            margin-bottom: 15px;
-            letter-spacing: 2px;
+            font-size: 2rem; font-weight: 900; color: #fff; text-transform: uppercase;
+            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px var(--accent-gold), 0 0 30px var(--accent-gold), 0 0 40px #ff00de, 0 0 70px #ff00de;
+            animation: neonGlow 1.5s infinite alternate; margin-bottom: 15px; letter-spacing: 2px;
         }
         @keyframes neonGlow {
-            from {
-                text-shadow: 
-                    0 0 5px #fff,
-                    0 0 10px #fff,
-                    0 0 15px var(--accent-gold),
-                    0 0 25px var(--accent-gold);
-            }
-            to {
-                text-shadow: 
-                    0 0 2px #fff,
-                    0 0 5px #ff8da1,
-                    0 0 10px #ff00de,
-                    0 0 20px #ff00de,
-                    0 0 35px #ff00de;
-            }
+            from { text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px var(--accent-gold), 0 0 25px var(--accent-gold); }
+            to { text-shadow: 0 0 2px #fff, 0 0 5px #ff8da1, 0 0 10px #ff00de, 0 0 20px #ff00de, 0 0 35px #ff00de; }
         }
         .neon-modal-card p { color: #f3e5ab; font-size: 0.9rem; margin-bottom: 15px; font-weight: bold; }
         .neon-input {
@@ -329,6 +312,10 @@
                 <textarea id="newBagDesc" placeholder="مثال: ساعة مقاومة للماء / حقيبة بمقاس 25cm"></textarea>
             </div>
             <div>
+                <label>رابط الفيديو التوضيحي (اختياري - يوتيوب / تيك توك / انستكرام):</label>
+                <input type="text" id="newBagVideo" placeholder="https://vt.tiktok.com/...">
+            </div>
+            <div>
                 <label id="imageLabel">اختر الصور:</label>
                 <input type="file" id="newBagImage" accept="image/*" multiple>
             </div>
@@ -339,7 +326,7 @@
         </div>
     </div>
 
-    <!-- نافذة إدخال كلمة السر المخصصة مع خط النيون الفاخر لاسم حسن جلال -->
+    <!-- نافذة إدخال كلمة السر مع خط النيون لاسم حسن جلال -->
     <div class="neon-modal-overlay" id="neonPasswordModal">
         <div class="neon-modal-card">
             <div class="neon-text-hassan">حسن جلال</div>
@@ -503,7 +490,6 @@
             renderProducts();
         });
 
-        // فتح نافذة كلمة السر النيون
         function toggleAdminPanel() {
             const panel = document.getElementById('adminPanel');
             if (isAdmin) {
@@ -534,7 +520,6 @@
             }
         }
 
-        // دعم الضغط على زر Enter داخل حقل الباسورد
         document.getElementById('neonPasswordInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 confirmNeonPassword();
@@ -566,6 +551,8 @@
                         <div class="zoom-badge"><i class="fa-search-plus fas"></i> تكبير (${imgs.length})</div>
                         <img src="${imgs[currentIdx]}" alt="${product.name}" class="product-img" onclick="openImageModal(${pIdx}, ${currentIdx})">
                         
+                        ${product.videoUrl ? `<a href="${product.videoUrl}" target="_blank" class="video-badge-btn"><i class="fa-play-circle fas"></i> فيديو ع الطبيعة 🎬</a>` : ''}
+
                         ${imgs.length > 1 ? `
                             <button class="gallery-nav gallery-prev" onclick="changeCardImg(event, ${pIdx}, -1)"><i class="fa-chevron-right fas"></i></button>
                             <button class="gallery-nav gallery-next" onclick="changeCardImg(event, ${pIdx}, 1)"><i class="fa-chevron-left fas"></i></button>
@@ -645,7 +632,6 @@
             }
         }
 
-        // دالة ضغط وتصغير الصور تلقائياً
         function compressImage(file, maxWidth = 900, quality = 0.75) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -682,6 +668,7 @@
             document.getElementById('newBagName').value = product.name;
             document.getElementById('newBagPrice').value = product.price;
             document.getElementById('newBagDesc').value = product.desc || '';
+            document.getElementById('newBagVideo').value = product.videoUrl || '';
             
             document.getElementById('adminPanelTitle').innerText = '✏️ تعديل المنتج الحالي';
             document.getElementById('saveBtn').innerText = 'حفظ التعديلات 💾';
@@ -696,6 +683,7 @@
             document.getElementById('newBagName').value = '';
             document.getElementById('newBagPrice').value = '';
             document.getElementById('newBagDesc').value = '';
+            document.getElementById('newBagVideo').value = '';
             document.getElementById('newBagImage').value = '';
             
             document.getElementById('adminPanelTitle').innerText = '➕ إضافة منتج جديد للمتجر السحابي';
@@ -709,6 +697,7 @@
             const nameInput = document.getElementById('newBagName').value.trim();
             const priceInput = document.getElementById('newBagPrice').value.trim();
             const descInput = document.getElementById('newBagDesc').value.trim();
+            const videoInput = document.getElementById('newBagVideo').value.trim();
             const imageInput = document.getElementById('newBagImage');
             const saveBtn = document.getElementById('saveBtn');
 
@@ -737,6 +726,7 @@
                         name: nameInput,
                         price: Number(priceInput),
                         desc: descInput,
+                        videoUrl: videoInput,
                         images: finalImages
                     });
 
@@ -759,6 +749,7 @@
                         name: nameInput,
                         price: Number(priceInput),
                         desc: descInput,
+                        videoUrl: videoInput,
                         images: compressedImages
                     });
 
