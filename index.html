@@ -57,14 +57,16 @@
             max-width: 650px; margin: 0 auto 12px; padding: 0 10px;
         }
 
-        /* أقسام الساعات والحقائب مطابقة للصورة المطلوبة تماماً */
         .store-sections {
             display: flex; justify-content: center; gap: 15px; margin: 12px 0 14px; padding: 0 10px;
         }
         .section-box {
-            background: var(--primary-navy); color: #fff; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            background: rgba(30,37,48,0.15); color: var(--primary-navy); padding: 7px 18px; border-radius: 20px; font-size: 0.85rem;
             font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;
-            text-decoration: none; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            text-decoration: none; border: 1.5px solid var(--primary-navy); transition: all 0.2s;
+        }
+        .section-box.active {
+            background: var(--primary-navy); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
         .social-bar { display: flex; justify-content: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
@@ -88,7 +90,7 @@
         .admin-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; align-items: end; }
         .admin-form div { display: flex; flex-direction: column; }
         .admin-form label { font-size: 0.8rem; font-weight: bold; margin-bottom: 4px; color: var(--primary-navy); }
-        .admin-form input, .admin-form textarea { padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.85rem; }
+        .admin-form input, .admin-form textarea, .admin-form select { padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.85rem; background: white; }
         .admin-form textarea { resize: vertical; height: 38px; }
         
         .admin-btn-group { display: flex; gap: 5px; }
@@ -97,7 +99,12 @@
 
         .container { max-width: 1100px; margin: 20px auto; padding: 0 12px; }
 
-        .catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 14px; }
+        .category-title-bar {
+            font-size: 1.15rem; font-weight: bold; color: var(--primary-navy); margin-bottom: 12px;
+            display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--accent-gold); padding-bottom: 5px;
+        }
+
+        .catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 14px; margin-bottom: 25px; }
         .product-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; box-shadow: 0 3px 10px rgba(0,0,0,0.06); border: 1px solid #e6ded1; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
         
         .product-gallery { position: relative; width: 100%; height: 180px; background-color: #f0f0f0; overflow: hidden; cursor: pointer; }
@@ -130,18 +137,15 @@
             background: var(--primary-navy); color: white;
             padding: 7px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: bold;
             text-decoration: none; margin-bottom: 8px; box-shadow: 0 2px 5px rgba(30,37,48,0.2);
-            transition: transform 0.1s;
         }
-        .video-btn-card:active { transform: scale(0.98); }
 
         .btn-add { 
             background: var(--primary-navy); 
             color: white; border: none; padding: 9px 12px; height: auto;
             border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 0.85rem; 
-            box-shadow: 0 2px 5px rgba(30,37,48,0.2); transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 2px 5px rgba(30,37,48,0.2);
             display: flex; align-items: center; justify-content: center; gap: 6px;
         }
-        .btn-add:active { transform: scale(0.98); }
 
         .admin-card-actions { position: absolute; top: 6px; right: 6px; display: none; gap: 4px; z-index: 3; }
         .btn-edit-product { background: rgba(0, 123, 255, 0.9); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }
@@ -169,11 +173,8 @@
         .cart-modal-content {
             background: white; width: 100%; max-width: 500px; max-height: 88vh;
             border-top-left-radius: 20px; border-top-right-radius: 20px;
-            padding: 20px; overflow-y: auto; animation: slideUp 0.3s ease-out;
-            box-shadow: 0 -5px 25px rgba(0,0,0,0.2);
+            padding: 20px; overflow-y: auto; box-shadow: 0 -5px 25px rgba(0,0,0,0.2);
         }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
         .cart-modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; margin-bottom: 15px; }
         .cart-modal-header h2 { color: var(--primary-navy); font-size: 1.2rem; }
         .cart-close-btn { font-size: 1.5rem; color: #888; cursor: pointer; }
@@ -284,16 +285,19 @@
     <header>
         <button class="admin-toggle-btn" onclick="toggleAdminPanel()">⚙️ لوحة الإدارة</button>
         
-        <!-- رابط مباشر لملف logo.png من مستودعك على غيتهاب لضمان ظهوره فوراً -->
         <img src="https://raw.githubusercontent.com/h1j17/YASAJ/main/logo.png" alt="لوجو متجر ياسه" class="brand-logo" onerror="this.src='logo.png';">
         
         <h1>مـتـجـر 𝐘𝐀𝐒𝐀 للحقائب والساعات</h1>
         <p class="header-subtext">في 𝐘𝐀𝐒𝐀 نؤمن أن الحقيبة والساعة ليست مجرد إكسسوار، بل هي انعكاس لشخصيتچ. اكتشفي مجموعتنا من الحقائب الجلدية والساعات الفاخرة المصممة بعناية لتناسب أسلوب حياتچ</p>
 
-        <!-- الأقسام -->
+        <!-- الأقسام (تغيير القسم المعروض) -->
         <div class="store-sections">
-            <a href="#catalog" class="section-box"><i class="fa-clock fas"></i> ساعات رجالية / نسائية</a>
-            <a href="#catalog" class="section-box"><i class="fa-shopping-bag fas"></i> حقائب</a>
+            <button class="section-box active" id="btnTabBags" onclick="switchTab('bags')">
+                <i class="fa-shopping-bag fas"></i> حقائب نسائية
+            </button>
+            <button class="section-box" id="btnTabWatches" onclick="switchTab('watches')">
+                <i class="fa-clock fas"></i> ساعات رجالية / نسائية
+            </button>
         </div>
 
         <div class="social-bar">
@@ -311,19 +315,26 @@
         
         <div class="admin-form">
             <div>
-                <label>اسم المنتج:</label>
-                <input type="text" id="newBagName" placeholder="مثال: ساعة فاخرة / حقيبة جلد">
+                <label>نوع المنتج:</label>
+                <select id="newBagCategory">
+                    <option value="bags">حقيبة نسائية 👜</option>
+                    <option value="watches">ساعة ⌚</option>
+                </select>
             </div>
             <div>
-                <label>السعر (أدخل الرقم كاملاً مثل 10000):</label>
-                <input type="number" id="newBagPrice" placeholder="10000">
+                <label>اسم المنتج:</label>
+                <input type="text" id="newBagName" placeholder="مثال: حقيبة توت / ساعة فاخرة">
+            </div>
+            <div>
+                <label>السعر (أدخل الرقم مثل 15000):</label>
+                <input type="number" id="newBagPrice" placeholder="15000">
             </div>
             <div>
                 <label>التفاصيل والأبعاد:</label>
-                <textarea id="newBagDesc" placeholder="مثال: ساعة مقاومة للماء / حقيبة بمقاس 25cm"></textarea>
+                <textarea id="newBagDesc" placeholder="مثال: جلد طري بالكامل..."></textarea>
             </div>
             <div>
-                <label>رابط الفيديو التوضيحي (اختياري):</label>
+                <label>رابط الفيديو (اختياري):</label>
                 <input type="text" id="newBagVideo" placeholder="https://vt.tiktok.com/...">
             </div>
             <div>
@@ -351,9 +362,23 @@
     </div>
 
     <div class="container" id="catalog-section">
-        <div class="catalog" id="catalog">
-            <p class="loading-msg">جاري تحميل كتالوج متجر ياسه... ⏳</p>
+        
+        <!-- قسم الحقائب -->
+        <div id="sectionBagsWrapper">
+            <div class="category-title-bar"><i class="fa-shopping-bag fas"></i> قسم الحقائب النسائية الفاخرة</div>
+            <div class="catalog" id="catalogBags">
+                <p class="loading-msg">جاري تحميل الحقائب... ⏳</p>
+            </div>
         </div>
+
+        <!-- قسم الساعات (مخفي افتراضياً ويظهر عند الضغط على زر الساعات) -->
+        <div id="sectionWatchesWrapper" style="display: none;">
+            <div class="category-title-bar"><i class="fa-clock fas"></i> قسم الساعات الرجالية والنسائية</div>
+            <div class="catalog" id="catalogWatches">
+                <p class="loading-msg">جاري تحميل الساعات... ⏳</p>
+            </div>
+        </div>
+
     </div>
 
     <!-- الشريط العائم بالسلة -->
@@ -494,6 +519,29 @@
         let activeImagesList = [];
         let activeImageIdx = 0;
 
+        // التبويب الافتراضي الذي يظهر عند فتح الموقع أول مرة (الحقائب)
+        let currentTab = 'bags';
+
+        function switchTab(tabName) {
+            currentTab = tabName;
+            const bagsWrapper = document.getElementById('sectionBagsWrapper');
+            const watchesWrapper = document.getElementById('sectionWatchesWrapper');
+            const btnBags = document.getElementById('btnTabBags');
+            const btnWatches = document.getElementById('btnTabWatches');
+
+            if (tabName === 'bags') {
+                bagsWrapper.style.display = 'block';
+                watchesWrapper.style.display = 'none';
+                btnBags.classList.add('active');
+                btnWatches.classList.remove('active');
+            } else {
+                bagsWrapper.style.display = 'none';
+                watchesWrapper.style.display = 'block';
+                btnWatches.classList.add('active');
+                btnBags.classList.remove('active');
+            }
+        }
+
         const cachedProducts = localStorage.getItem('yasa_cached_products');
         if (cachedProducts) {
             try {
@@ -509,7 +557,9 @@
                 Object.keys(data).forEach(key => {
                     const prod = data[key];
                     let imgs = prod.images || (prod.image ? [prod.image] : []);
-                    products.push({ id: key, ...prod, images: imgs, activeImgIdx: 0 });
+                    // تصنيف افتراضي في حال المنتج قديم ولم يُحدد له تصنيف مسبقاً
+                    let category = prod.category || 'bags';
+                    products.push({ id: key, ...prod, category: category, images: imgs, activeImgIdx: 0 });
                 });
             }
             localStorage.setItem('yasa_cached_products', JSON.stringify(products));
@@ -553,57 +603,75 @@
         });
 
         function renderProducts() {
-            const catalogContainer = document.getElementById('catalog');
-            catalogContainer.innerHTML = '';
+            const bagsContainer = document.getElementById('catalogBags');
+            const watchesContainer = document.getElementById('catalogWatches');
+            
+            bagsContainer.innerHTML = '';
+            watchesContainer.innerHTML = '';
 
-            if (products.length === 0) {
-                catalogContainer.innerHTML = '<p class="loading-msg">لا توجد منتجات معروضة حالياً.</p>';
-                return;
+            const bagsList = products.filter(p => p.category === 'bags');
+            const watchesList = products.filter(p => p.category === 'watches');
+
+            if (bagsList.length === 0) {
+                bagsContainer.innerHTML = '<p class="loading-msg">لا توجد حقائب معروضة حالياً.</p>';
+            } else {
+                bagsList.forEach((product) => {
+                    bagsContainer.appendChild(createProductCard(product));
+                });
             }
 
-            products.forEach((product, pIdx) => {
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                
-                const imgs = product.images.length > 0 ? product.images : ['https://via.placeholder.com/200'];
-                const currentIdx = product.activeImgIdx || 0;
+            if (watchesList.length === 0) {
+                watchesContainer.innerHTML = '<p class="loading-msg">لا توجد ساعات معروضة حالياً.</p>';
+            } else {
+                watchesList.forEach((product) => {
+                    watchesContainer.appendChild(createProductCard(product));
+                });
+            }
+        }
 
-                card.innerHTML = `
-                    <div class="admin-card-actions" style="display: ${isAdmin ? 'flex' : 'none'}">
-                        <button class="btn-edit-product" onclick="startEditProduct('${product.id}')" title="تعديل"><i class="fa-pen fas"></i></button>
-                        <button class="btn-delete-product" onclick="deleteProduct('${product.id}')" title="حذف"><i class="fa-times fas"></i></button>
-                    </div>
-                    <div class="product-gallery">
-                        <div class="zoom-badge"><i class="fa-search-plus fas"></i> تكبير (${imgs.length})</div>
-                        <img src="${imgs[currentIdx]}" alt="${product.name}" class="product-img" onclick="openImageModal(${pIdx}, ${currentIdx})">
-                        
-                        ${imgs.length > 1 ? `
-                            <button class="gallery-nav gallery-prev" onclick="changeCardImg(event, ${pIdx}, -1)"><i class="fa-chevron-right fas"></i></button>
-                            <button class="gallery-nav gallery-next" onclick="changeCardImg(event, ${pIdx}, 1)"><i class="fa-chevron-left fas"></i></button>
-                            <div class="gallery-dots">
-                                ${imgs.map((_, i) => `<span class="dot ${i === currentIdx ? 'active' : ''}"></span>`).join('')}
-                            </div>
-                        ` : ''}
-                    </div>
+        function createProductCard(product) {
+            const pIdx = products.findIndex(p => p.id === product.id);
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            
+            const imgs = product.images.length > 0 ? product.images : ['https://via.placeholder.com/200'];
+            const currentIdx = product.activeImgIdx || 0;
+
+            card.innerHTML = `
+                <div class="admin-card-actions" style="display: ${isAdmin ? 'flex' : 'none'}">
+                    <button class="btn-edit-product" onclick="startEditProduct('${product.id}')" title="تعديل"><i class="fa-pen fas"></i></button>
+                    <button class="btn-delete-product" onclick="deleteProduct('${product.id}')" title="حذف"><i class="fa-times fas"></i></button>
+                </div>
+                <div class="product-gallery">
+                    <div class="zoom-badge"><i class="fa-search-plus fas"></i> تكبير (${imgs.length})</div>
+                    <img src="${imgs[currentIdx]}" alt="${product.name}" class="product-img" onclick="openImageModal(${pIdx}, ${currentIdx})">
                     
-                    <div class="product-info">
-                        <div>
-                            <div class="product-title">${product.name}</div>
-                            ${product.desc ? `<div class="product-desc">${product.desc}</div>` : ''}
+                    ${imgs.length > 1 ? `
+                        <button class="gallery-nav gallery-prev" onclick="changeCardImg(event, ${pIdx}, -1)"><i class="fa-chevron-right fas"></i></button>
+                        <button class="gallery-nav gallery-next" onclick="changeCardImg(event, ${pIdx}, 1)"><i class="fa-chevron-left fas"></i></button>
+                        <div class="gallery-dots">
+                            ${imgs.map((_, i) => `<span class="dot ${i === currentIdx ? 'active' : ''}"></span>`).join('')}
                         </div>
-                        <div>
-                            <div class="product-price">${Number(product.price).toLocaleString()} دينار عراقي</div>
-                            
-                            ${product.videoUrl ? `<a href="${product.videoUrl}" target="_blank" class="video-btn-card"><i class="fa-play-circle fas"></i> مشاهدة فيديو الحقيبة 🎬</a>` : ''}
-
-                            <button class="btn-add" onclick="addToCart('${product.id}')">
-                                <i class="fa-shopping-cart fas"></i> إضافة للسلة
-                            </button>
-                        </div>
+                    ` : ''}
+                </div>
+                
+                <div class="product-info">
+                    <div>
+                        <div class="product-title">${product.name}</div>
+                        ${product.desc ? `<div class="product-desc">${product.desc}</div>` : ''}
                     </div>
-                `;
-                catalogContainer.appendChild(card);
-            });
+                    <div>
+                        <div class="product-price">${Number(product.price).toLocaleString()} دينار عراقي</div>
+                        
+                        ${product.videoUrl ? `<a href="${product.videoUrl}" target="_blank" class="video-btn-card"><i class="fa-play-circle fas"></i> مشاهدة الفيديو 🎬</a>` : ''}
+
+                        <button class="btn-add" onclick="addToCart('${product.id}')">
+                            <i class="fa-shopping-cart fas"></i> إضافة للسلة
+                        </button>
+                    </div>
+                </div>
+            `;
+            return card;
         }
 
         function changeCardImg(event, pIdx, dir) {
@@ -692,6 +760,7 @@
             if (!product) return;
 
             document.getElementById('editingProductId').value = product.id;
+            document.getElementById('newBagCategory').value = product.category || 'bags';
             document.getElementById('newBagName').value = product.name;
             document.getElementById('newBagPrice').value = product.price;
             document.getElementById('newBagDesc').value = product.desc || '';
@@ -707,6 +776,7 @@
 
         function resetAdminForm() {
             document.getElementById('editingProductId').value = '';
+            document.getElementById('newBagCategory').value = 'bags';
             document.getElementById('newBagName').value = '';
             document.getElementById('newBagPrice').value = '';
             document.getElementById('newBagDesc').value = '';
@@ -721,6 +791,7 @@
 
         async function saveProduct() {
             const editingId = document.getElementById('editingProductId').value;
+            const categoryInput = document.getElementById('newBagCategory').value;
             const nameInput = document.getElementById('newBagName').value.trim();
             const priceInput = document.getElementById('newBagPrice').value.trim();
             const descInput = document.getElementById('newBagDesc').value.trim();
@@ -750,6 +821,7 @@
                     }
 
                     await productRef.update({
+                        category: categoryInput,
                         name: nameInput,
                         price: Number(priceInput),
                         desc: descInput,
@@ -773,6 +845,7 @@
 
                     const newProductRef = db.ref('products').push();
                     await newProductRef.set({
+                        category: categoryInput,
                         name: nameInput,
                         price: Number(priceInput),
                         desc: descInput,
@@ -780,7 +853,7 @@
                         images: compressedImages
                     });
 
-                    alert('تمت إضافة المنتج بنجاح وبسرعة فائقة! 🚀');
+                    alert('تمت إضافة المنتج بنجاح للقسم المخصص! 🚀');
                     resetAdminForm();
                 }
             } catch (error) {
