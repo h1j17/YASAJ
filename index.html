@@ -33,13 +33,14 @@
         }
 
         .brand-logo {
-            width: 95px;
-            height: 95px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             object-fit: cover;
             border: 3px solid var(--primary-navy);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            background-color: #fff;
         }
 
         .admin-toggle-btn {
@@ -56,7 +57,7 @@
             max-width: 650px; margin: 0 auto 12px; padding: 0 10px;
         }
 
-        /* أقسام الساعات والحقائب مطابقة للصورة الثانية تماماً */
+        /* أقسام الساعات والحقائب مطابقة للصورة المطلوبة تماماً */
         .store-sections {
             display: flex; justify-content: center; gap: 15px; margin: 12px 0 14px; padding: 0 10px;
         }
@@ -146,7 +147,7 @@
         .btn-edit-product { background: rgba(0, 123, 255, 0.9); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }
         .btn-delete-product { background: rgba(255, 0, 0, 0.85); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }
 
-        /* شريط السلة العائم مطابق للصورة الثانية */
+        /* شريط السلة العائم */
         .floating-cart-bar {
             position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
             width: 90%; max-width: 450px;
@@ -190,7 +191,6 @@
             text-align: center; padding: 8px 10px; border-radius: 8px; font-size: 0.82rem; font-weight: bold; margin-top: 8px;
         }
 
-        /* خيار اختر واحدة فقط */
         .gift-choice-box {
             background: #fcf8f2; border: 1.5px solid #d4c3a3;
             border-radius: 10px; padding: 12px; margin-bottom: 14px;
@@ -218,7 +218,6 @@
         .empty-cart-msg { text-align: center; color: #888; font-size: 0.9rem; padding: 10px 0; }
         .loading-msg { text-align: center; grid-column: 1 / -1; color: #666; padding: 30px; }
 
-        /* نافذة الباسورد */
         .neon-modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center;
@@ -285,20 +284,19 @@
     <header>
         <button class="admin-toggle-btn" onclick="toggleAdminPanel()">⚙️ لوحة الإدارة</button>
         
-        <!-- اللوجو الجديد -->
-        <img src="https://raw.githubusercontent.com/h1j17/Yasa1h/main/28066.png" alt="لوجو متجر ياسه" class="brand-logo" onerror="this.src='https://via.placeholder.com/95?text=YASA'">
+        <!-- اللوجو الجديد المباشر والصحيح -->
+        <img src="https://raw.githubusercontent.com/h1j17/Yasa1h/main/28066_2.png" alt="لوجو متجر ياسه" class="brand-logo" onerror="this.src='https://via.placeholder.com/100?text=YASA'">
         
         <h1>مـتـجـر 𝐘𝐀𝐒𝐀 للحقائب والساعات</h1>
         <p class="header-subtext">في 𝐘𝐀𝐒𝐀 نؤمن أن الحقيبة والساعة ليست مجرد إكسسوار، بل هي انعكاس لشخصيتچ. اكتشفي مجموعتنا من الحقائب الجلدية والساعات الفاخرة المصممة بعناية لتناسب أسلوب حياتچ</p>
 
-        <!-- خانات الأقسام مطابقة للصورة الثانية -->
+        <!-- الأقسام -->
         <div class="store-sections">
             <a href="#catalog" class="section-box"><i class="fa-clock fas"></i> ساعات رجالية / نسائية</a>
             <a href="#catalog" class="section-box"><i class="fa-shopping-bag fas"></i> حقائب</a>
         </div>
 
         <div class="social-bar">
-            <!-- أيقونة الواتساب -->
             <a href="https://wa.me/9647763863429" target="_blank" class="social-btn btn-whatsapp"><i class="fa-whatsapp fab"></i> واتساب</a>
             <a href="https://t.me/yasa1h" target="_blank" class="social-btn btn-tg-personal"><i class="fa-paper-plane fab"></i> حجز التلكرام</a>
             <a href="https://t.me/yasa35" target="_blank" class="social-btn btn-tg-channel"><i class="fa-telegram fab"></i> القناة</a>
@@ -405,7 +403,6 @@
                 </div>
             </div>
 
-            <!-- خيار: اختر واحدة فقط (حقيبة مجاناً او توصيل مجاني) -->
             <div class="gift-choice-box">
                 <span class="gift-choice-title">اختر واحده فقط:</span>
                 <div class="gift-radio-group">
@@ -429,7 +426,6 @@
                 <label for="address">المحافظة / العنوان المباشر:</label>
                 <input type="text" id="address" placeholder="بغداد / المنصور / قرب ..." required>
 
-                <!-- خانة ملاحظة لموظفة التجهيز -->
                 <label for="orderNote">أضف ملاحظه لموظفة التجهيز:</label>
                 <textarea id="orderNote" placeholder="اكتبي أي ملاحظة خاصة بالطلب هنا (اختياري)..."></textarea>
 
