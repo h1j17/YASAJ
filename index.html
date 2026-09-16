@@ -130,7 +130,6 @@
         }
         .btn-add:active { transform: scale(0.98); }
 
-        /* أزرار الإدارة على الكارت */
         .admin-card-actions { position: absolute; top: 6px; right: 6px; display: none; gap: 4px; z-index: 3; }
         .btn-edit-product { background: rgba(0, 123, 255, 0.9); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }
         .btn-delete-product { background: rgba(255, 0, 0, 0.85); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }
@@ -196,6 +195,61 @@
         .btn-submit { background: linear-gradient(135deg, #25d366, #128c7e); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 1rem; font-weight: bold; }
         .empty-cart-msg { text-align: center; color: #888; font-size: 0.9rem; padding: 10px 0; }
         .loading-msg { text-align: center; grid-column: 1 / -1; color: #666; padding: 30px; }
+
+        /* نافذة إدخال الباسورد المخصصة مع خط النيون الفاخر */
+        .neon-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center;
+            z-index: 10002; padding: 15px; backdrop-filter: blur(5px);
+        }
+        .neon-modal-card {
+            background: #1a0205; border: 2px solid var(--accent-gold);
+            border-radius: 16px; padding: 25px 20px; max-width: 360px; width: 100%;
+            text-align: center; box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+        }
+        /* تصميم خط النيون الفاخر لاسم حسن جلال */
+        .neon-text-hassan {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #fff;
+            text-transform: uppercase;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            text-shadow: 
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 20px var(--accent-gold),
+                0 0 30px var(--accent-gold),
+                0 0 40px #ff00de,
+                0 0 70px #ff00de;
+            animation: neonGlow 1.5s infinite alternate;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+        @keyframes neonGlow {
+            from {
+                text-shadow: 
+                    0 0 5px #fff,
+                    0 0 10px #fff,
+                    0 0 15px var(--accent-gold),
+                    0 0 25px var(--accent-gold);
+            }
+            to {
+                text-shadow: 
+                    0 0 2px #fff,
+                    0 0 5px #ff8da1,
+                    0 0 10px #ff00de,
+                    0 0 20px #ff00de,
+                    0 0 35px #ff00de;
+            }
+        }
+        .neon-modal-card p { color: #f3e5ab; font-size: 0.9rem; margin-bottom: 15px; font-weight: bold; }
+        .neon-input {
+            width: 100%; padding: 10px; background: #2b050b; border: 1.5px solid var(--accent-gold);
+            border-radius: 8px; color: white; font-size: 1.1rem; text-align: center; margin-bottom: 15px; outline: none;
+        }
+        .neon-btn-group { display: flex; gap: 10px; }
+        .neon-btn-confirm { background: var(--accent-gold); color: var(--primary-dark); border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; }
+        .neon-btn-cancel { background: rgba(255,255,255,0.1); color: white; border: 1px solid #777; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; }
 
         .image-modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -285,6 +339,19 @@
         </div>
     </div>
 
+    <!-- نافذة إدخال كلمة السر المخصصة مع خط النيون الفاخر لاسم حسن جلال -->
+    <div class="neon-modal-overlay" id="neonPasswordModal">
+        <div class="neon-modal-card">
+            <div class="neon-text-hassan">حسن جلال</div>
+            <p>يرجى إدخال كلمة سر الإدارة:</p>
+            <input type="password" id="neonPasswordInput" class="neon-input" placeholder="••••••••">
+            <div class="neon-btn-group">
+                <button class="neon-btn-confirm" onclick="confirmNeonPassword()">حسناً</button>
+                <button class="neon-btn-cancel" onclick="closeNeonPasswordModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <div class="catalog" id="catalog">
             <p class="loading-msg">جاري تحميل كتالوج متجر ياسه... ⏳</p>
@@ -349,7 +416,6 @@
                 <label for="address">المحافظة / العنوان المباشر:</label>
                 <input type="text" id="address" placeholder="بغداد / المنصور / قرب ..." required>
 
-                <!-- قسم جهة التواصل (اختياري تماماً) -->
                 <div class="social-contact-selector">
                     <span class="social-contact-title">اختر جهة التواصل معك عند حدوث مشكلة أو تأخير بالطلب (اختياري):</span>
                     <div class="radio-group">
@@ -437,6 +503,7 @@
             renderProducts();
         });
 
+        // فتح نافذة كلمة السر النيون
         function toggleAdminPanel() {
             const panel = document.getElementById('adminPanel');
             if (isAdmin) {
@@ -446,15 +513,33 @@
                 renderProducts();
                 return;
             }
-            const password = prompt("يرجى إدخال كلمة سر الإدارة:");
+            document.getElementById('neonPasswordInput').value = '';
+            document.getElementById('neonPasswordModal').style.display = 'flex';
+            document.getElementById('neonPasswordInput').focus();
+        }
+
+        function closeNeonPasswordModal() {
+            document.getElementById('neonPasswordModal').style.display = 'none';
+        }
+
+        function confirmNeonPassword() {
+            const password = document.getElementById('neonPasswordInput').value;
             if (password === "1972002h1") {
                 isAdmin = true;
-                panel.style.display = 'block';
+                document.getElementById('neonPasswordModal').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
                 renderProducts();
-            } else if (password !== null) {
+            } else {
                 alert("كلمة السر غير صحيحة!");
             }
         }
+
+        // دعم الضغط على زر Enter داخل حقل الباسورد
+        document.getElementById('neonPasswordInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                confirmNeonPassword();
+            }
+        });
 
         function renderProducts() {
             const catalogContainer = document.getElementById('catalog');
@@ -589,7 +674,6 @@
             });
         }
 
-        // تحضير لوحة الإدارة لوضع التعديل
         function startEditProduct(productId) {
             const product = products.find(p => p.id === productId);
             if (!product) return;
@@ -638,7 +722,6 @@
 
             try {
                 if (editingId) {
-                    // وضع التعديل
                     const productRef = db.ref('products/' + editingId);
                     const snapshot = await productRef.once('value');
                     const existingData = snapshot.val();
@@ -660,7 +743,6 @@
                     alert('تم تعديل المنتج بنجاح! ✨');
                     resetAdminForm();
                 } else {
-                    // وضع الإضافة الجديدة
                     if (imageInput.files.length === 0) {
                         alert('يرجى اختيار صورة واحدة على الأقل للمنتج الجديد!');
                         saveBtn.disabled = false;
