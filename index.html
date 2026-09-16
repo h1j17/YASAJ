@@ -119,24 +119,12 @@
         .product-desc { font-size: 0.75rem; color: #555; margin-bottom: 8px; line-height: 1.3; background: #fdf5f5; padding: 5px; border-radius: 6px; border: 1px dashed #f0d0d0; }
         .product-price { color: var(--primary-color); font-weight: 800; font-size: 0.95rem; margin-bottom: 8px; }
         
-        /* تعديل زر إضافة للسلة */
         .btn-add { 
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); 
-            color: white; 
-            border: none; 
-            padding: 9px 12px; 
-            height: auto;
-            border-radius: 8px; 
-            cursor: pointer; 
-            width: 100%; 
-            font-weight: bold; 
-            font-size: 0.85rem; 
-            box-shadow: 0 2px 5px rgba(107,15,26,0.2); 
-            transition: background 0.2s, transform 0.1s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
+            color: white; border: none; padding: 9px 12px; height: auto;
+            border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 0.85rem; 
+            box-shadow: 0 2px 5px rgba(107,15,26,0.2); transition: background 0.2s, transform 0.1s;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
         }
         .btn-add:active { transform: scale(0.98); }
 
@@ -416,6 +404,16 @@
         let activeImagesList = [];
         let activeImageIdx = 0;
 
+        // 1. تحميل سريع فوري من ذاكرة الهاتف المؤقتة (Local Storage) أولاً إن وجدت
+        const cachedProducts = localStorage.getItem('yasa_cached_products');
+        if (cachedProducts) {
+            try {
+                products = JSON.parse(cachedProducts);
+                renderProducts();
+            } catch (e) {}
+        }
+
+        // 2. جلب التحديثات من قاعدة البيانات في الخلفية وتخزينها للمرات القادمة
         db.ref('products').on('value', (snapshot) => {
             const data = snapshot.val();
             products = [];
@@ -426,6 +424,8 @@
                     products.push({ id: key, ...prod, images: imgs, activeImgIdx: 0 });
                 });
             }
+            // حفظ نسخة مطابقة بذاكرة المتصفح للسرعة الفائقة مستقبلاً
+            localStorage.setItem('yasa_cached_products', JSON.stringify(products));
             renderProducts();
         });
 
@@ -548,7 +548,7 @@
             }
         }
 
-        // دالة ضغط وتصغير الصور تلقائياً لسرعة التحميل الفائق
+        // دالة ضغط وتصغير الصور تلقائياً
         function compressImage(file, maxWidth = 900, quality = 0.75) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
