@@ -105,7 +105,6 @@
         .btn-save-product { background-color: var(--primary-navy); color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; flex: 1; }
         .btn-cancel-edit { background-color: #777; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; display: none; }
 
-        /* لوحة إدارة الطلبات للإدارة */
         .admin-orders-section {
             margin-top: 20px; border-top: 2px solid #ddd; padding-top: 15px;
         }
@@ -169,7 +168,6 @@
         .btn-edit-product { background: rgba(0, 123, 255, 0.9); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }
         .btn-delete-product { background: rgba(255, 0, 0, 0.85); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }
 
-        /* شريط السلة العائم */
         .floating-cart-bar {
             position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
             width: 90%; max-width: 450px;
@@ -265,7 +263,6 @@
         .neon-btn-confirm { background: var(--accent-gold); color: var(--primary-dark); border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; }
         .neon-btn-cancel { background: rgba(255,255,255,0.1); color: white; border: 1px solid #777; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; }
 
-        /* نافذة تتبع الطلبات للزبون */
         .track-modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center;
@@ -385,7 +382,6 @@
             </div>
         </div>
 
-        <!-- لوحة إدارة طلبات الزبائن (تظهر للإدارة فقط) -->
         <div class="admin-orders-section">
             <h3 style="color: var(--primary-navy); margin-bottom: 10px;">📋 إدارة طلبات الزبائن الواردة:</h3>
             <div id="adminOrdersList">
@@ -579,7 +575,6 @@
         let activeImageIdx = 0;
         let currentTab = 'bags';
 
-        // دالة توليد أو جلب معرف فريد للزبون ومحفوظ بجهازه
         function getOrCreateCustomerToken() {
             let token = localStorage.getItem('yasa_customer_token');
             if (!token) {
@@ -621,6 +616,7 @@
             } catch (e) {}
         }
 
+        // التعديل المعتمد لضمان مزامنة المنتجات فوراً وتصفير فهرس الصور لكل منتج
         db.ref('products').on('value', (snapshot) => {
             const data = snapshot.val();
             products = [];
@@ -632,11 +628,14 @@
                     products.push({ id: key, ...prod, category: category, images: imgs, activeImgIdx: 0 });
                 });
             }
-            localStorage.setItem('yasa_cached_products', JSON.stringify(products));
+            try {
+                localStorage.setItem('yasa_cached_products', JSON.stringify(products));
+            } catch (e) {
+                console.warn('LocalStorage is full');
+            }
             renderProducts();
         });
 
-        // الاستماع للطلبات في لوحة الإدارة
         db.ref('orders').on('value', (snapshot) => {
             const data = snapshot.val();
             const adminOrdersList = document.getElementById('adminOrdersList');
@@ -648,7 +647,6 @@
             }
 
             let html = '';
-            // عرض الطلبات من الأحدث للأقدم
             const orderKeys = Object.keys(data).reverse();
             orderKeys.forEach(key => {
                 const order = data[key];
@@ -657,7 +655,7 @@
                 html += `
                     <div class="admin-order-card">
                         <p><strong>رقم الطلب:</strong> ${key.substring(0, 8)}...</p>
-                        <p><strong>الاسم:</strong> ${order.name} | <strong>الهاتف:</strong> ${order.phone}</p>
+                        <p><strong>الاسم:</strong> ${order.name} \vert{} <strong>الهاتف:</strong> ${order.phone}</p>
                         <p><strong>العنوان:</strong> ${order.address}</p>
                         <p><strong>المبلغ الكلي:</strong> ${order.finalTotal ? order.finalTotal.toLocaleString() : 0} د.ع</p>
                         <p style="margin-top: 5px;"><strong>تغيير الحالة:</strong> 
@@ -677,9 +675,7 @@
         });
 
         function updateOrderStatus(orderId, newStatus) {
-            db.ref('orders/' + orderId).update({ status: newStatus }).then(() => {
-                // تحديث ناجح صامت
-            }).catch(err => {
+            db.ref('orders/' + orderId).update({ status: newStatus }).catch(err => {
                 alert('فشل تحديث الحالة: ' + err.message);
             });
         }
@@ -720,7 +716,6 @@
             }
         });
 
-        // فتح نافذة تتبع الطلبات للزبون
         function openOrderTracker() {
             document.getElementById('orderTrackerModal').style.display = 'flex';
             fetchCustomerOrders();
@@ -835,7 +830,7 @@
                 </div>
                 <div class="product-gallery">
                     <div class="zoom-badge"><i class="fa-search-plus fas"></i> تكبير (${imgs.length})</div>
-                    <img src="${imgs[currentIdx]}" alt="${product.name}" class="product-img" onclick="openImageModal(${pIdx}, ${currentIdx})">
+                    <img src="${imgs[currentIdx]}" alt="${product.name}" class="product-img" onclick="openImageModal(${pIdx},${currentIdx})">
                     
                     ${imgs.length > 1 ? `
                         <button class="gallery-nav gallery-prev" onclick="changeCardImg(event, ${pIdx}, -1)"><i class="fa-chevron-right fas"></i></button>
@@ -848,8 +843,7 @@
                 
                 <div class="product-info">
                     <div>
-                        <div class="product-title">${product.name}</div>
-                        ${product.desc ? `<div class="product-desc">${product.desc}</div>` : ''}
+                        <div class="product-title">${product.name}</div>${product.desc ? `<div class="product-desc">${product.desc}</div>` : ''}
                     </div>
                     <div>
                         <div class="product-price">${Number(product.price).toLocaleString()} دينار عراقي</div>
@@ -1179,7 +1173,6 @@
             radio.addEventListener('change', updateCartUI);
         });
 
-        // إرسال الطلب وحفظه في Firebase مع الـ Token وحالة الطلب الابتدائية
         async function sendOrder(event) {
             event.preventDefault();
 
@@ -1233,7 +1226,6 @@
             }
             const finalTotal = itemsTotal + currentDeliveryFee;
 
-            // حفظ الطلب في قاعدة بيانات Firebase مع معرف جهاز الزبون والحالة الأولية
             const customerToken = getOrCreateCustomerToken();
             const orderDataToSave = {
                 customerToken: customerToken,
@@ -1245,15 +1237,13 @@
                 itemsTotal: itemsTotal,
                 deliveryFee: currentDeliveryFee,
                 finalTotal: finalTotal,
-                status: 'pending', // الحالة الافتراضية: قيد المراجعة
+                status: 'pending',
                 createdAt: firebase.database.ServerValue.TIMESTAMP
             };
 
             try {
-                // 1. حفظ الطلب بـ Firebase
                 await db.ref('orders').push(orderDataToSave);
 
-                // 2. إرسال إشعار التلكرام (البوت)
                 const platformName = platform === 'telegram' ? 'تلكرام ✈️' : 'انستكرام 📸';
                 const contactInfo = socialHandle ? `📲 *حساب التواصل (${platformName}):* \`${socialHandle}\`` : `📲 *حساب التواصل:* لم يتم إدخاله`;
 
