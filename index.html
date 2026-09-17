@@ -50,6 +50,14 @@
             padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: bold;
         }
 
+        .track-order-btn {
+            position: absolute; right: 10px; top: 10px;
+            background: var(--accent-gold); color: var(--primary-dark);
+            border: none;
+            padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+
         header h1 { font-size: 1.4rem; margin-bottom: 8px; color: var(--primary-navy); font-weight: 800; }
 
         .header-subtext {
@@ -96,6 +104,16 @@
         .admin-btn-group { display: flex; gap: 5px; }
         .btn-save-product { background-color: var(--primary-navy); color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; flex: 1; }
         .btn-cancel-edit { background-color: #777; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; display: none; }
+
+        /* لوحة إدارة الطلبات للإدارة */
+        .admin-orders-section {
+            margin-top: 20px; border-top: 2px solid #ddd; padding-top: 15px;
+        }
+        .admin-order-card {
+            background: white; border: 1px solid #ccc; border-radius: 8px; padding: 12px; margin-bottom: 10px;
+            font-size: 0.85rem;
+        }
+        .admin-order-card select { padding: 5px; border-radius: 5px; border: 1px solid #999; font-weight: bold; }
 
         .container { max-width: 1100px; margin: 20px auto; padding: 0 12px; }
 
@@ -247,6 +265,21 @@
         .neon-btn-confirm { background: var(--accent-gold); color: var(--primary-dark); border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; }
         .neon-btn-cancel { background: rgba(255,255,255,0.1); color: white; border: 1px solid #777; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; }
 
+        /* نافذة تتبع الطلبات للزبون */
+        .track-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center;
+            z-index: 10003; padding: 15px;
+        }
+        .track-modal-content {
+            background: white; width: 100%; max-width: 550px; max-height: 85vh;
+            border-radius: 16px; padding: 20px; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .user-order-card {
+            background: #faf7f0; border: 1.5px solid #dcd3be; border-radius: 10px; padding: 12px; margin-bottom: 12px;
+            font-size: 0.85rem;
+        }
+
         .image-modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.93); display: none; justify-content: center; align-items: center;
@@ -288,6 +321,7 @@
 
     <header>
         <button class="admin-toggle-btn" onclick="toggleAdminPanel()">⚙️ لوحة الإدارة</button>
+        <button class="track-order-btn" onclick="openOrderTracker()">📦 حالة الطلب</button>
         
         <img src="https://raw.githubusercontent.com/h1j17/YASAJ/main/logo.png" alt="لوجو متجر ياسه" class="brand-logo" onerror="this.src='logo.png';">
         
@@ -350,6 +384,14 @@
                 <button class="btn-cancel-edit" id="cancelEditBtn" onclick="resetAdminForm()">إلغاء</button>
             </div>
         </div>
+
+        <!-- لوحة إدارة طلبات الزبائن (تظهر للإدارة فقط) -->
+        <div class="admin-orders-section">
+            <h3 style="color: var(--primary-navy); margin-bottom: 10px;">📋 إدارة طلبات الزبائن الواردة:</h3>
+            <div id="adminOrdersList">
+                <p>جاري تحميل الطلبات...</p>
+            </div>
+        </div>
     </div>
 
     <!-- نافذة إدخال كلمة السر -->
@@ -361,6 +403,19 @@
             <div class="neon-btn-group">
                 <button class="neon-btn-confirm" onclick="confirmNeonPassword()">حسناً</button>
                 <button class="neon-btn-cancel" onclick="closeNeonPasswordModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تتبع الطلبات للزبون -->
+    <div class="track-modal-overlay" id="orderTrackerModal">
+        <div class="track-modal-content">
+            <div class="cart-modal-header">
+                <h2>📦 سجل وتتبع طلباتك</h2>
+                <span class="cart-close-btn" onclick="closeOrderTracker()">&times;</span>
+            </div>
+            <div id="userOrdersContainer">
+                <p style="text-align: center; color: #666; padding: 20px;">جاري جلب طلباتك...</p>
             </div>
         </div>
     </div>
@@ -430,7 +485,7 @@
                 <div id="deliveryBadgeContainer"></div>
             </div>
 
-            <!-- خيار الهدية/التوصيل المجاني (يظهر فقط لزبائن قسم الحقائب) -->
+            <!-- خيار الهدية/التوصيل المجاني -->
             <div class="gift-choice-box" id="giftChoiceBoxWrapper">
                 <span class="gift-choice-title">اختر واحده فقط:</span>
                 <span class="gift-choice-subnote" id="giftLockNote">🔒 يشترط حجز حقيبتين أو أكثر لتفعيل هذا الخيار</span>
@@ -475,7 +530,7 @@
                 </div>
 
                 <button type="submit" class="btn-submit" id="submitBtn">
-                    <i class="fa-check-circle fas"></i> تأكيد وإرسال الطلب عبر التلكرام
+                    <i class="fa-check-circle fas"></i> تأكيد وإرسال الطلب
                 </button>
             </form>
         </div>
@@ -494,7 +549,7 @@
         <div class="gift-modal-card">
             <i class="fa-gift fas gift-icon"></i>
             <h3>تم إرسال طلبكِ بنجاح! 💖</h3>
-            <p>🎉 <strong>مفاجأة خاصة لكِ!</strong><br>تم تسجيل اختياركِ وسيتم تجهيز طلبكِ بكل عناية في متجر ياسه.</p>
+            <p>🎉 <strong>مفاجأة خاصة لكِ!</strong><br>تم تسجيل اختياركِ وسيتم تجهيز طلبكِ بكل عناية في متجر ياسه. يمكنك متابعة حالة طلبك من زر "حالة الطلب" بالأعلى.</p>
             <button class="gift-btn-close" onclick="closeGiftModal()">تم، شكراً لكم ✨</button>
         </div>
     </div>
@@ -522,8 +577,17 @@
 
         let activeImagesList = [];
         let activeImageIdx = 0;
-
         let currentTab = 'bags';
+
+        // دالة توليد أو جلب معرف فريد للزبون ومحفوظ بجهازه
+        function getOrCreateCustomerToken() {
+            let token = localStorage.getItem('yasa_customer_token');
+            if (!token) {
+                token = 'yasa_' + Math.random().toString(36).substring(2, 12) + Date.now().toString(36);
+                localStorage.setItem('yasa_customer_token', token);
+            }
+            return token;
+        }
 
         function switchTab(tabName) {
             currentTab = tabName;
@@ -572,6 +636,54 @@
             renderProducts();
         });
 
+        // الاستماع للطلبات في لوحة الإدارة
+        db.ref('orders').on('value', (snapshot) => {
+            const data = snapshot.val();
+            const adminOrdersList = document.getElementById('adminOrdersList');
+            if (!adminOrdersList) return;
+
+            if (!data) {
+                adminOrdersList.innerHTML = '<p>لا توجد طلبات واردة حالياً.</p>';
+                return;
+            }
+
+            let html = '';
+            // عرض الطلبات من الأحدث للأقدم
+            const orderKeys = Object.keys(data).reverse();
+            orderKeys.forEach(key => {
+                const order = data[key];
+                const status = order.status || 'pending';
+                
+                html += `
+                    <div class="admin-order-card">
+                        <p><strong>رقم الطلب:</strong> ${key.substring(0, 8)}...</p>
+                        <p><strong>الاسم:</strong> ${order.name} | <strong>الهاتف:</strong> ${order.phone}</p>
+                        <p><strong>العنوان:</strong> ${order.address}</p>
+                        <p><strong>المبلغ الكلي:</strong> ${order.finalTotal ? order.finalTotal.toLocaleString() : 0} د.ع</p>
+                        <p style="margin-top: 5px;"><strong>تغيير الحالة:</strong> 
+                            <select onchange="updateOrderStatus('${key}', this.value)">
+                                <option value="pending" ${status === 'pending' ? 'selected' : ''}>🟡 قيد المراجعة</option>
+                                <option value="processing" ${status === 'processing' ? 'selected' : ''}>🔵 جاري التجهيز</option>
+                                <option value="shipped" ${status === 'shipped' ? 'selected' : ''}>🟣 تم الشحن</option>
+                                <option value="out_for_delivery" ${status === 'out_for_delivery' ? 'selected' : ''}>🟠 سوف يصل بعد قليل</option>
+                                <option value="delivered" ${status === 'delivered' ? 'selected' : ''}>🟢 تم التسليم</option>
+                                <option value="cancelled" ${status === 'cancelled' ? 'selected' : ''}>🔴 ملغي</option>
+                            </select>
+                        </p>
+                    </div>
+                `;
+            });
+            adminOrdersList.innerHTML = html;
+        });
+
+        function updateOrderStatus(orderId, newStatus) {
+            db.ref('orders/' + orderId).update({ status: newStatus }).then(() => {
+                // تحديث ناجح صامت
+            }).catch(err => {
+                alert('فشل تحديث الحالة: ' + err.message);
+            });
+        }
+
         function toggleAdminPanel() {
             const panel = document.getElementById('adminPanel');
             if (isAdmin) {
@@ -607,6 +719,79 @@
                 confirmNeonPassword();
             }
         });
+
+        // فتح نافذة تتبع الطلبات للزبون
+        function openOrderTracker() {
+            document.getElementById('orderTrackerModal').style.display = 'flex';
+            fetchCustomerOrders();
+        }
+
+        function closeOrderTracker() {
+            document.getElementById('orderTrackerModal').style.display = 'none';
+        }
+
+        async function fetchCustomerOrders() {
+            const container = document.getElementById('userOrdersContainer');
+            const customerToken = getOrCreateCustomerToken();
+            container.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">جاري جلب طلباتك...</p>';
+
+            db.ref('orders').orderByChild('customerToken').equalTo(customerToken).once('value', (snapshot) => {
+                const data = snapshot.val();
+                if (!data) {
+                    container.innerHTML = '<p style="text-align: center; color: #777; padding: 20px;">لا توجد طلبات مسجلة على هذا الجهاز حالياً.</p>';
+                    return;
+                }
+
+                let activeHtml = '<h3 style="color: var(--primary-navy); font-size: 1rem; margin-bottom: 8px;">الطلبات الحالية 🔄</h3>';
+                let archiveHtml = '<h3 style="color: var(--primary-navy); font-size: 1rem; margin: 15px 0 8px;">سجل الطلبات السابقة (الأرشيف) 📁</h3>';
+                let hasActive = false;
+                let hasArchive = false;
+
+                const keys = Object.keys(data).reverse();
+                keys.forEach(key => {
+                    const order = data[key];
+                    const statusInfo = getStatusDetails(order.status);
+                    
+                    let cardHtml = `
+                        <div class="user-order-card">
+                            <p><strong>رقم الطلب:</strong> #${key.substring(0, 6)}</p>
+                            <p><strong>العنوان:</strong> ${order.address}</p>
+                            <p><strong>المبلغ الإجمالي:</strong> ${order.finalTotal ? order.finalTotal.toLocaleString() : 0} د.ع</p>
+                            <p style="margin-top: 6px;"><strong>حالة الطلب:</strong> <span style="background: ${statusInfo.bg}; color: white; padding: 3px 8px; border-radius: 4px; font-weight: bold;">${statusInfo.text}</span></p>
+                        </div>
+                    `;
+
+                    if (order.status === 'delivered' || order.status === 'cancelled') {
+                        archiveHtml += cardHtml;
+                        hasArchive = true;
+                    } else {
+                        activeHtml += cardHtml;
+                        hasActive = true;
+                    }
+                });
+
+                let finalRender = '';
+                if (hasActive) finalRender += activeHtml;
+                else finalRender += '<p style="color: #666; font-size: 0.85rem; margin-bottom: 10px;">لا توجد طلبات جارية حالياً.</p>';
+
+                if (hasArchive) finalRender += archiveHtml;
+                else finalRender += '<p style="color: #666; font-size: 0.85rem;">لا توجد طلبات سابقة في الأرشيف.</p>';
+
+                container.innerHTML = finalRender;
+            });
+        }
+
+        function getStatusDetails(status) {
+            switch (status) {
+                case 'pending': return { text: '🟡 قيد المراجعة', bg: '#f39c12' };
+                case 'processing': return { text: '🔵 جاري التجهيز', bg: '#3498db' };
+                case 'shipped': return { text: '🟣 تم الشحن', bg: '#9b59b6' };
+                case 'out_for_delivery': return { text: '🟠 سوف يصل بعد قليل', bg: '#e67e22' };
+                case 'delivered': return { text: '🟢 تم التسليم', bg: '#2ecc71' };
+                case 'cancelled': return { text: '🔴 ملغي', bg: '#e74c3c' };
+                default: return { text: '🟡 قيد المراجعة', bg: '#f39c12' };
+            }
+        }
 
         function renderProducts() {
             const bagsContainer = document.getElementById('catalogBags');
@@ -925,9 +1110,6 @@
                 }
             });
 
-            // منطق تفعيل خيار الهدية وتوصيل قسم الحقائب:
-            // - إذا كان في قسم الحقائب وتم حجز حقيبتين أو أكثر: يتم تفعيل الخيار.
-            // - إذا كان أقل من حقيبتين أو في قسم الساعات: يبقى معطلاً.
             let isBagsGiftUnlocked = (currentTab === 'bags' && totalBagsCount >= 2);
 
             if (isBagsGiftUnlocked) {
@@ -936,7 +1118,6 @@
                 radioBagGift.disabled = false;
                 radioDeliveryGift.disabled = false;
                 
-                // إذا لم يكن أي خيار محدد افتراضياً، نحدد الأول
                 if (!radioBagGift.checked && !radioDeliveryGift.checked) {
                     radioBagGift.checked = true;
                 }
@@ -947,14 +1128,13 @@
                 radioDeliveryGift.disabled = true;
             }
 
-            // حساب مبلغ التوصيل والمجموع النهائي
             let currentDeliveryFee = STANDARD_DELIVERY_FEE;
             let selectedGift = document.querySelector('input[name="giftChoice"]:checked');
 
             if (currentTab === 'bags' && isBagsGiftUnlocked && selectedGift && selectedGift.value === 'توصيل مجاني') {
-                currentDeliveryFee = 0; // إذا اختار توصيل مجاني، يلغى مبلغ التوصيل
+                currentDeliveryFee = 0;
             } else if (currentTab === 'watches' && (totalWatchesCount >= 2 || (totalWatchesCount >= 2 && totalBagsCount >= 1))) {
-                currentDeliveryFee = 0; // الساعات (قطعتين فأكثر) توصيل مجاني تلقائي
+                currentDeliveryFee = 0;
             }
 
             const finalTotal = cart.length > 0 ? (itemsTotal + currentDeliveryFee) : 0;
@@ -995,11 +1175,11 @@
             });
         }
 
-        // الاستماع لتغيير اختيار الهدية لتحديث الحسابات فورا
         document.querySelectorAll('input[name="giftChoice"]').forEach(radio => {
             radio.addEventListener('change', updateCartUI);
         });
 
+        // إرسال الطلب وحفظه في Firebase مع الـ Token وحالة الطلب الابتدائية
         async function sendOrder(event) {
             event.preventDefault();
 
@@ -1020,7 +1200,7 @@
 
             const isBagsGiftUnlocked = (currentTab === 'bags' && totalBagsCount >= 2);
             const giftChoiceInput = document.querySelector('input[name="giftChoice"]:checked');
-            const giftChoice = (isBagsGiftUnlocked && giftChoiceInput) ? giftChoiceInput.value : 'غير مفعل (أقل من حقيبتين أو قسم الساعات)';
+            const giftChoice = (isBagsGiftUnlocked && giftChoiceInput) ? giftChoiceInput.value : 'غير مفعل';
 
             const platform = document.querySelector('input[name="contactPlatform"]:checked').value;
             const socialHandle = document.getElementById('socialHandle').value.trim();
@@ -1053,65 +1233,72 @@
             }
             const finalTotal = itemsTotal + currentDeliveryFee;
 
-            const platformName = platform === 'telegram' ? 'تلكرام ✈️' : 'انستكرام 📸';
-            const contactInfo = socialHandle ? `📲 *حساب التواصل (${platformName}):* \`${socialHandle}\`` : `📲 *حساب التواصل:* لم يتم إدخاله`;
-
-            let orderText = `🛍️ *طلب جديد من متجر ياسه*\n\n`;
-            orderText += `👤 *الاسم:* ${name}\n`;
-            orderText += `📞 *الهاتف:* \`${phone}\`\n`;
-            orderText += `${contactInfo}\n`;
-            orderText += `📍 *العنوان:* ${address}\n`;
-            if (currentTab === 'bags') {
-                orderText += `🎁 *اختيار العرض:* ${giftChoice} ${giftChoice === 'حقيبة مجانا' ? '(تختارها وتضيفها الإدارة)' : ''}\n`;
-            } else {
-                orderText += `⌚ *طلب خاص بالساعات*\n`;
-            }
-            if (orderNote) {
-                orderText += `📝 *ملاحظة موظفة التجهيز:* ${orderNote}\n`;
-            }
-            orderText += `\n🛒 *تفاصيل المنتجات:*\n`;
-
-            cart.forEach(item => {
-                const subtotal = item.price * item.quantity;
-                orderText += `- ${item.name} (العدد: ${item.quantity}) = ${subtotal.toLocaleString()} دينار عراقي\n`;
-            });
-
-            orderText += `\n🛍️ *عدد القطع:* ${totalItems} قطع`;
-            orderText += `\n💰 *مجموع سعر المنتجات:* ${itemsTotal.toLocaleString()} دينار عراقي`;
-            orderText += `\n🚚 *مبلغ التوصيل:* ${currentDeliveryFee === 0 ? 'مجاناً 🎉' : currentDeliveryFee.toLocaleString() + ' دينار عراقي'}`;
-            orderText += `\n✨ *المجموع الكلي النهائي:* ${finalTotal.toLocaleString()} دينار عراقي`;
-
-            const BOT_TOKEN = "8911646351:AAHuAQsJSt_LX6Il2m6O7K1FVEaEJ-YpsaA";
-            const CHAT_ID = "7461743496";
-
-            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+            // حفظ الطلب في قاعدة بيانات Firebase مع معرف جهاز الزبون والحالة الأولية
+            const customerToken = getOrCreateCustomerToken();
+            const orderDataToSave = {
+                customerToken: customerToken,
+                name: name,
+                phone: phone,
+                address: address,
+                orderNote: orderNote,
+                items: cart,
+                itemsTotal: itemsTotal,
+                deliveryFee: currentDeliveryFee,
+                finalTotal: finalTotal,
+                status: 'pending', // الحالة الافتراضية: قيد المراجعة
+                createdAt: firebase.database.ServerValue.TIMESTAMP
+            };
 
             try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: CHAT_ID,
-                        text: orderText,
-                        parse_mode: 'Markdown'
-                    })
+                // 1. حفظ الطلب بـ Firebase
+                await db.ref('orders').push(orderDataToSave);
+
+                // 2. إرسال إشعار التلكرام (البوت)
+                const platformName = platform === 'telegram' ? 'تلكرام ✈️' : 'انستكرام 📸';
+                const contactInfo = socialHandle ? `📲 *حساب التواصل (${platformName}):* \`${socialHandle}\`` : `📲 *حساب التواصل:* لم يتم إدخاله`;
+
+                let orderText = `🛍️ *طلب جديد من متجر ياسه*\n\n`;
+                orderText += `👤 *الاسم:* ${name}\n`;
+                orderText += `📞 *الهاتف:* \`${phone}\`\n`;
+                orderText += `${contactInfo}\n`;
+                orderText += `📍 *العنوان:* ${address}\n`;
+                if (currentTab === 'bags') {
+                    orderText += `🎁 *اختيار العرض:* ${giftChoice}\n`;
+                }
+                if (orderNote) {
+                    orderText += `📝 *ملاحظة موظفة التجهيز:* ${orderNote}\n`;
+                }
+                orderText += `\n🛒 *تفاصيل المنتجات:*\n`;
+
+                cart.forEach(item => {
+                    orderText += `- ${item.name} (العدد: ${item.quantity}) = ${(item.price * item.quantity).toLocaleString()} د.ع\n`;
                 });
 
-                if (response.ok) {
-                    closeCartModal();
-                    document.getElementById('giftModal').style.display = 'flex';
-                    cart = [];
-                    updateCartUI();
-                    document.getElementById('orderForm').reset();
-                    toggleSocialInput();
-                } else {
-                    alert('حدث خطأ أثناء إرسال الطلب.');
-                }
+                orderText += `\n🛍️ *عدد القطع:* ${totalItems} قطع`;
+                orderText += `\n💰 *مجموع السعر:* ${itemsTotal.toLocaleString()} د.ع`;
+                orderText += `\n🚚 *التوصيل:* ${currentDeliveryFee === 0 ? 'مجاناً 🎉' : currentDeliveryFee.toLocaleString() + ' د.ع'}`;
+                orderText += `\n✨ *المجموع الكلي:* ${finalTotal.toLocaleString()} د.ع`;
+
+                const BOT_TOKEN = "8911646351:AAHuAQsJSt_LX6Il2m6O7K1FVEaEJ-YpsaA";
+                const CHAT_ID = "7461743496";
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: CHAT_ID, text: orderText, parse_mode: 'Markdown' })
+                });
+
+                closeCartModal();
+                document.getElementById('giftModal').style.display = 'flex';
+                cart = [];
+                updateCartUI();
+                document.getElementById('orderForm').reset();
+                toggleSocialInput();
+
             } catch (error) {
-                alert('تعذر الاتصال بالخادم، يرجى التأكد من اتصال الإنترنت.');
+                alert('حدث خطأ أثناء إرسال الطلب: ' + error.message);
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fa-check-circle fas"></i> تأكيد وإرسال الطلب عبر التلكرام';
+                submitBtn.innerHTML = '<i class="fa-check-circle fas"></i> تأكيد وإرسال الطلب';
             }
         }
 
